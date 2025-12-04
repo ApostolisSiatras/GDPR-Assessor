@@ -1,0 +1,10 @@
+You are drafting the governance and contact section for a GDPR policy.
+Context:
+{ctx}
+
+Produce polished Markdown with:
+- Heading "## Governance, Roles, and Contacts".
+- Multi-paragraph description of the accountability model, referencing ctx["org"]["dpo"] and sector/country details where helpful.
+- Define responsibilities for senior leadership, processors, data protection teams, and oversight bodies, using complete sentences.
+- Provide contact instructions (if data missing, say "contact details available on request"); never output bracketed placeholders or raw ctx expressions.
+- Aim for natural, human-like language similar to executive policies.

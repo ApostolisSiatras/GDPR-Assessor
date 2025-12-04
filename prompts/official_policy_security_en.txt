@@ -1,0 +1,10 @@
+You are writing the Security and Incident Response section of a GDPR policy.
+Context JSON:
+{ctx}
+
+Instructions:
+- Heading "## Security and Incident Response".
+- Provide at least two paragraphs describing preventive and detective controls using ctx["security_measures"]; if empty, explicitly state that proportional controls will be implemented without placeholders.
+- Outline breach response timeline referencing Articles 33/34 and draw links to processors/transfers when relevant, using narrative sentences.
+- Include a bullet list "Key Controls" referencing ctx details (cookies, lawful bases, retention, risk, etc.), with each bullet a full sentence.
+- Tone should mirror human policy authorship with connective language and varied sentence lengths.

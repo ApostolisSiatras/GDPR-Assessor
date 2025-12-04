@@ -1,0 +1,76 @@
+{
+  "Q-DPIA-001": true,
+  "Q-DPIA-001A": [
+    "CUSTOMERS",
+    "EMPLOYEES",
+    "CONTRACTORS",
+    "USERS"
+  ],
+  "Q-DPIA-002": [
+    "HR_ADMINISTRATION",
+    "PAYROLL",
+    "CUSTOMER_MANAGEMENT",
+    "MARKETING"
+  ],
+  "Q-DPIA-003": [
+    "IDENTITY",
+    "FINANCIAL",
+    "HEALTH",
+    "EDUCATION",
+    "CUSTOMER_BEHAVIOR",
+    "DEVICE_TELEMETRY"
+  ],
+  "Q-DPIA-004": [
+    "HEALTH",
+    "BIOMETRIC",
+    "GENETIC"
+  ],
+  "Q-DPIA-005": "LOW_<=1000",
+  "Q-DPIA-006": [
+    "CONSENT",
+    "CONTRACT",
+    "LEGAL_OBLIGATION"
+  ],
+  "Q-DPIA-007": "YES",
+  "Q-DPIA-008": 1,
+  "Q-DPIA-009": [
+    "CONTROLLER",
+    "JOINT_CONTROLLER",
+    "PROCESSOR"
+  ],
+  "Q-DPIA-010": "YES",
+  "Q-DPIA-011": "YES",
+  "Q-DPIA-012": [
+    "ADEQUACY",
+    "SCC",
+    "BCR"
+  ],
+  "Q-DPIA-013": "YES",
+  "Q-DPIA-014": "YES",
+  "Q-DPIA-014A": [
+    "PROFILING",
+    "BEHAVIOR_TRACKING",
+    "GEOLOCATION_TRACKING",
+    "ONLINE_ACTIVITY_MONITORING"
+  ],
+  "Q-DPIA-015": "YES",
+  "Q-DPIA-016": "YES",
+  "Q-DPIA-017": "YES",
+  "Q-DPIA-018": "YES",
+  "Q-DPIA-019A": "YES",
+  "Q-DPIA-019B": "YES",
+  "Q-DPIA-020": "YES",
+  "Q-DPIA-021": "YES",
+  "Q-DPIA-022": "YES",
+  "Q-DPIA-023": "YES",
+  "Q-DPIA-024": "YES",
+  "Q-DPIA-025": [
+    "ACCESS",
+    "RECTIFICATION",
+    "ERASURE"
+  ],
+  "Q-DPIA-026": "YES",
+  "Q-DPIA-027": "VERY_LOW",
+  "Q-DPIA-028": "LOW",
+  "Q-DPIA-029": "YES"
+}

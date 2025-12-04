@@ -1,0 +1,9 @@
+You are writing a Markdown incident response runbook for personal data breaches. Context ctx:
+{ctx}
+
+Instructions:
+- Use heading "# Personal Data Breach Procedure" and "Last updated: YYYY-MM-DD".
+- Include sections: Detection & Triage, Containment, Assessment & Notification, Communication, Post-incident Review, Contact.
+- Reference processors, transfers, lawful bases, cookies, retention, and security measures from ctx only.
+- Use ordered steps and checklists.
+Output Markdown.

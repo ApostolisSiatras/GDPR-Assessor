@@ -1,0 +1,76 @@
+--- 20251112T083338Z/dsar_procedure.md
++++ 20251112T093946Z/dsar_procedure.md
+@@ -5,34 +5,52 @@
+ This procedure outlines the steps to be taken when handling Data Subject Access Requests (DSARs) in accordance with the General Data Protection Regulation (GDPR).
+ 
+ ## Intake & Verification
+-1. Identify and acknowledge receipt of a DSAR from the data subject.
+-2. Verify the identity of the data subject and confirm their request is legitimate.
+-3. Check if the request is complete, including all necessary information and documentation.
++1. Identify and verify the requestor's identity.
++2. Confirm that the request is a DSAR under GDPR.
++3. Check if the request is valid and complete.
++
++### Safeguards
++
++* Lawful bases: The organisation operates on the basis of legitimate interests, as specified in the lawful_bases section of the ctx.
++* Processors: The organisation uses processors for data processing, as listed in the processors section of the ctx.
++* Transfers: The organisation transfers personal data to third countries, as outlined in the transfers section of the ctx.
++* Retention: Personal data is retained in accordance with the retention policy, as specified in the retention section of the ctx.
+ 
+ ## Assessment & Coordination
+-1. Determine the lawful basis for processing the personal data requested (refer to ctx: "lawful_bases").
+-2. Identify any processors involved in the processing of the personal data (refer to ctx: "processors").
+-3. Assess whether any transfers of personal data have taken place, including to third countries (refer to ctx: "transfers").
+-4. Determine the retention period for the requested data (refer to ctx: "retention").
++1. Determine the scope of the request and identify relevant data.
++2. Assess the risk associated with the request.
++3. Coordinate with relevant departments to gather necessary information.
++
++### Safeguards
++
++* Rights: The organisation respects the rights of data subjects, as outlined in the sections section of the ctx (E.Rights).
++* Security controls: The organisation maintains robust security measures, as listed in the security_measures section of the ctx.
+ 
+ ## Response Content
+-1. Provide a clear and concise response to the DSAR, including:
+-	* A description of the personal data processed.
+-	* The purposes for which the data was collected and processed.
+-	* Any third parties with whom the data has been shared.
+-	* Information on the safeguards in place to protect the data (refer to ctx: "safeguards").
+-2. Include any relevant documentation or evidence to support the response.
++1. Provide a clear and concise response to the requestor.
++2. Include all relevant information, including data processed and retention periods.
++3. Ensure that the response is accurate and complete.
++
++### Safeguards
++
++* Lawful bases: The organisation's lawful bases for processing are clearly stated in the response.
++* Retention: The organisation's retention policy is explained in the response.
+ 
+ ## Timelines & Escalations
+-1. Respond to DSARs within 30 calendar days of receipt, unless an extension is necessary due to complexity.
+-2. Escalate complex or high-priority requests to the Data Protection Officer (DPO) for assistance.
++1. Establish a timeline for responding to the request.
++2. Identify potential escalation points and procedures.
++
++### Safeguards
++
++* Risk rating: The organisation's risk rating, as specified in the risk section of the ctx, informs the handling of DSARs.
+ 
+ ## Recordkeeping
+-1. Maintain a record of all DSARs received, including:
+-	* Date and time of receipt.
+-	* Details of the request.
+-	* Response provided.
+-2. Store records securely in accordance with data retention policies (refer to ctx: "retention").
++1. Maintain accurate records of all DSARs received.
++2. Store records securely and for a minimum period of 5 years.
++
++### Safeguards
++
++* Security measures: The organisation's security measures, as listed in the security_measures section of the ctx, protect against unauthorised access to records.
+ 
+ ## Contact
+-For any questions or concerns regarding this procedure, please contact our Data Protection Officer at [insert contact information].
++For further information or assistance with DSARs, please contact [Data protection contact available upon request.](mailto:data.protection@organisation.com)

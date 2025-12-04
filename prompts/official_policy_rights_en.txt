@@ -1,0 +1,11 @@
+You are composing the Data Subject Rights section of an official GDPR policy.
+Context JSON:
+{ctx}
+
+Requirements:
+- Heading "## Data Subject Rights".
+- Mention all rights enabled in ctx["security_measures"] or ctx["org"], plus the GDPR core rights (access, rectification, erasure, restriction, portability, objection, automated decisions).
+- Include a numbered procedure for submitting requests referencing ctx["org"]["contact"].
+- Add statement on expected response timelines and verification steps.
+- Provide contact instructions without literal ctx placeholders (e.g., write "Contact our DPO via the published privacy email" rather than "mailto:ctx..."). If a detail is missing, state "contact details available upon request."
+- Use warm, human-like language with multi-sentence paragraphs so the section feels official yet approachable.

@@ -1,0 +1,10 @@
+You are creating a GDPR Employee Privacy Notice. Context is JSON ctx:
+{ctx}
+
+Produce Markdown with:
+- Heading "# Employee Privacy Notice" and "Last updated: YYYY-MM-DD".
+- Sections: Overview, Categories of Personal Data, Lawful Bases, Processors (only those present), International Transfers, Retention, Employee Rights, Security Measures, Contact & DPO.
+- Highlight cookies only if ctx["cookies"] indicates enabled.
+- Use short bullet lists and simple sentences.
+- Do not add personal names; summarize using ctx only.
+Return Markdown.

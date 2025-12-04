@@ -1,0 +1,10 @@
+You are drafting the executive overview of an official GDPR compliance policy for the organisation described below.
+Context JSON:
+{ctx}
+
+Write polished, formal Markdown with:
+- Heading "## Executive Overview".
+- Two concise paragraphs describing mission, processing scope, establishment country, and DPO/contact details from ctx["org"]. Use precise language suitable for an official policy; avoid marketing filler.
+- Bullet list of key objectives (lawfulness, transparency, accountability, privacy-by-design) where each bullet is a complete sentence.
+- Conclude with one plain sentence affirming commitment to GDPR/UK GDPR, without mentioning scores, percentages, ratings, or any application/system provenance.
+Never leave placeholders; if information is missing, state "Information available on request."

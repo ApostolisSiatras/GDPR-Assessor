@@ -1,0 +1,138 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <section class="hero">
+    <div class="flex-between">
+      <div>
+        <h1>Official GDPR policy</h1>
+        <p>Consolidates DPIA + GAP intelligence into a board-ready policy with Markdown and PDF exports.</p>
+      </div>
+      <a class="btn btn-secondary" href="{{ url_for('results') }}">Back to analytics</a>
+    </div>
+  </section>
+  <div class="grid">
+    <div class="panel">
+      <h3>Run policy generator</h3>
+      {% if not assessments_ready %}
+        <p style="color:#B42318;">Complete both DPIA and GAP assessments before generating the official policy.</p>
+      {% else %}
+        <p>Generate a refreshed policy using the latest assessments, company profile, and section feedback.</p>
+        <form method="post">
+          <button class="btn" type="submit" data-loading="true" data-loading-text="Generating policy…">Generate / Refresh Policy</button>
+        </form>
+      {% endif %}
+      {% if error %}
+        <div class="notice" style="background-color:#fee2e2;border-color:#dc2626; margin-top:1rem;">
+          {{ error }}
+        </div>
+      {% endif %}
+    </div>
+    <div class="panel">
+      <h3>Latest policy run</h3>
+      {% if policy %}
+        <p>
+          <strong>Run ID:</strong> {{ policy.run_id }}<br />
+          <strong>Policy number:</strong> {{ policy.policy_number }}<br />
+          <strong>Generated:</strong> {{ policy.generated_at }}<br />
+          <strong>Model:</strong> {{ policy.model }}
+        </p>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+          <a class="btn" href="{{ url_for('download_official_policy', run_id=policy.run_id) }}">Download PDF</a>
+          <a class="btn btn-secondary" href="{{ url_for('download_official_policy', run_id=policy.run_id, fmt='html') }}">Download HTML</a>
+          <a class="btn btn-secondary" href="{{ url_for('download_official_policy', run_id=policy.run_id, fmt='md') }}">Download Markdown</a>
+        </div>
+      {% else %}
+        <p>No policy run yet. Generate the policy once assessments and company profile are ready.</p>
+      {% endif %}
+    </div>
+  </div>
+  {% if assessments_ready %}
+    <div class="panel" style="margin-top:1.5rem;">
+      <h3>Organisation profile</h3>
+      <form method="post" action="{{ url_for('update_company_profile') }}">
+        <div class="form-grid">
+          <div class="field-group">
+            <label for="org_name">Company / organisation name</label>
+            <input type="text" id="org_name" name="org_name" value="{{ company_profile.org_name or '' }}" placeholder="e.g. Acme Holdings Ltd" />
+          </div>
+          <div class="field-group">
+            <label for="sector">Industry / sector</label>
+            <input type="text" id="sector" name="sector" value="{{ company_profile.sector or '' }}" placeholder="e.g. SaaS / HR Tech" />
+          </div>
+          <div class="field-group">
+            <label for="country">Establishment country</label>
+            <input type="text" id="country" name="country" value="{{ company_profile.country or '' }}" placeholder="e.g. Ireland" />
+          </div>
+          <div class="field-group">
+            <label for="dpo_name">DPO / representative</label>
+            <input type="text" id="dpo_name" name="dpo_name" value="{{ company_profile.dpo_name or '' }}" placeholder="e.g. Jane Doe" />
+          </div>
+          <div class="field-group">
+            <label for="email">Contact email</label>
+            <input type="email" id="email" name="email" value="{{ company_profile.email or '' }}" placeholder="privacy@example.com" />
+          </div>
+          <div class="field-group">
+            <label for="phone">Contact phone</label>
+            <input type="text" id="phone" name="phone" value="{{ company_profile.phone or '' }}" placeholder="+44 20 1234 5678" />
+          </div>
+          <div class="field-group" style="grid-column:1 / -1;">
+            <label for="processors">Key processors (one per line)</label>
+            <textarea id="processors" name="processors" rows="3" placeholder="Vendor A — payroll processing
+Vendor B — secure hosting">{{ company_profile.processors|join('\n') if company_profile.processors else '' }}</textarea>
+          </div>
+          <div class="field-group" style="grid-column:1 / -1;">
+            <label for="transfers">International transfers / safeguards (one per line)</label>
+            <textarea id="transfers" name="transfers" rows="3" placeholder="HR data to US via SCCs
+Analytics data to SG under BCRs">{{ company_profile.transfers|join('\n') if company_profile.transfers else '' }}</textarea>
+          </div>
+        </div>
+        <button class="btn btn-secondary" type="submit" style="margin-top:1rem;">Save profile</button>
+      </form>
+    </div>
+    <div class="panel" style="margin-top:1.5rem;">
+      <h3>Section feedback</h3>
+      <form method="post" action="{{ url_for('update_policy_overrides') }}">
+        <div class="form-grid">
+          {% for slug, spec in sections_meta.items() %}
+            <div class="field-group" style="grid-column:1 / -1;">
+              <label for="override_{{ slug }}">{{ spec.title }} feedback</label>
+              <textarea id="override_{{ slug }}" name="override_{{ slug }}" rows="3" placeholder="Add context or edits for this section">{{ policy_overrides.get(slug, '') }}</textarea>
+            </div>
+          {% endfor %}
+        </div>
+        <button class="btn btn-secondary" type="submit" style="margin-top:1rem;">Save section comments</button>
+      </form>
+    </div>
+  {% endif %}
+  {% if policy %}
+    <div class="panel" style="margin-top:1.5rem;">
+      <div class="flex-between" style="align-items:flex-start;">
+        <div>
+          <h3>Policy preview</h3>
+          <p class="text-muted">Rendered HTML version of the latest policy run.</p>
+        </div>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+          {% if policy.paths.pdf %}
+            <a class="btn" href="{{ url_for('download_official_policy', run_id=policy.run_id) }}">PDF</a>
+          {% endif %}
+          <a class="btn btn-secondary" href="{{ url_for('download_official_policy', run_id=policy.run_id, fmt='html') }}">HTML</a>
+          <a class="btn btn-secondary" href="{{ url_for('download_official_policy', run_id=policy.run_id, fmt='md') }}">Markdown</a>
+        </div>
+      </div>
+      <div class="policy-preview" style="margin-top:1rem;">
+        <iframe class="policy-frame" srcdoc="{{ policy.html | replace('\"', '&quot;') | safe }}"></iframe>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:1.5rem;">
+      <h3>Sections</h3>
+      <div class="grid">
+        {% for section in policy.sections %}
+          <div class="panel" style="background:#f8fafc;">
+            <h4>{{ section.title }}</h4>
+            <pre class="policy-snippet">{{ section.content }}</pre>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

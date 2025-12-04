@@ -1,0 +1,821 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <section class="hero">
+    <div class="flex-between">
+      <div>
+        <h1>Consolidated GDPR posture <span class="info-icon" data-info="Central workspace to review readiness scores, narratives, and cookie data.">i</span></h1>
+        <p>Unified analytics for DPIA, governance controls, and cookie hygiene so you can brief leadership with confidence.</p>
+      </div>
+      <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+        <a class="btn btn-secondary" href="{{ url_for('home') }}">Assessment workspace</a>
+        <a class="btn" href="{{ url_for('official_policy_page') }}">Official policy</a>
+      </div>
+    </div>
+  </section>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <span>Average readiness</span>
+      <strong data-count="{{ combined.average_percent }}">0</strong><small>%</small>
+    </div>
+    <div class="stat-card">
+      <span>High-risk indicators</span>
+      <strong data-count="{{ combined.risk_count }}">0</strong>
+    </div>
+    <div class="stat-card">
+      <span>Coverage gaps</span>
+      <strong data-count="{{ combined.coverage_gaps }}">0</strong>
+    </div>
+  </div>
+  <div class="tab-nav">
+    <button type="button" class="tab-btn active" data-target="analytics-panel">Analytics</button>
+    <button type="button" class="tab-btn" data-target="error-panel">Audit trail</button>
+  </div>
+  <section id="analytics-panel" class="tab-panel active">
+    <div class="section-head">
+      <div>
+        <h2>Operational analytics</h2>
+        <p class="text-muted">Track readiness, spotlight annex gaps, and surface narratives for DPIA/GAP submissions.</p>
+      </div>
+      <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+        <a class="btn-secondary btn" href="{{ url_for('cookie_audit_view') }}">Cookie audit</a>
+        <a class="btn-ghost btn" href="{{ url_for('export_assessment', mode='dpia11') }}">Download evidence</a>
+      </div>
+    </div>
+    <div class="grid-split">
+      <div class="panel stack">
+        <div class="card-title">
+          <h3>Overall readiness</h3>
+          <span class="badge">Live</span>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <span>Average</span>
+            <strong>{{ combined.average_percent }}%</strong>
+          </div>
+          <div class="stat-card">
+            <span>DPIA</span>
+            <strong>
+              {% if combined.dpia_percent is not none %}
+                {{ combined.dpia_percent }}%
+              {% else %}
+                —
+              {% endif %}
+            </strong>
+          </div>
+          <div class="stat-card">
+            <span>GAP</span>
+            <strong>
+              {% if combined.gap_percent is not none %}
+                {{ combined.gap_percent }}%
+              {% else %}
+                —
+              {% endif %}
+            </strong>
+          </div>
+        </div>
+        <p class="text-muted">Scores are recalculated instantly as assessments evolve.</p>
+      </div>
+      <div class="panel stack">
+        <div class="card-title">
+          <h3>Risk surface</h3>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <span>High-risk indicators</span>
+            <strong>{{ combined.risk_count }}</strong>
+          </div>
+          <div class="stat-card">
+            <span>Coverage gaps</span>
+            <strong>{{ combined.coverage_gaps }}</strong>
+          </div>
+        </div>
+        <div>
+          <strong>GDPR annex focus</strong>
+          {% if annex_failures %}
+            <ul class="pill-list">
+              {% for annex in annex_failures[:4] %}
+                <li>
+                  <strong>{{ annex.annex }}</strong> — {{ annex.entries|length }} gap(s)
+                  <br />
+                  <small class="text-muted">e.g. {{ annex.entries[0].question }} · {{ annex.entries[0].section }}</small>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted">No annex-level blockers reported.</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="panel stack">
+        <div class="card-title">
+          <h3>Top warnings</h3>
+        </div>
+        {% if combined.warnings %}
+          <ul class="pill-list">
+            {% for warn in combined.warnings %}
+              <li>{{ warn }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-muted">No priority warnings right now.</p>
+        {% endif %}
+      </div>
+    </div>
+    <div class="grid-split">
+      <div class="panel">
+        <div class="section-head">
+        <h3>Readiness gauge <span class="info-icon" data-info="Shows overall average score; hover the dial for the exact percentage.">i</span></h3>
+          <p class="text-muted">Visual dial of overall score.</p>
+        </div>
+        <div style="max-width:320px; margin:0 auto;">
+          <canvas id="readinessDial" data-value="{{ combined.average_percent }}" height="220"></canvas>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="section-head">
+        <h3>Score comparison <span class="info-icon" data-info="Bar chart contrasting DPIA vs GAP scores. Use it to spot uneven readiness.">i</span></h3>
+          <p class="text-muted">Compare readiness between modules.</p>
+        </div>
+        <canvas id="overallChart" height="120"></canvas>
+      </div>
+    </div>
+    <div class="grid-split">
+      <div class="panel stack">
+        <div class="card-title">
+          <h3>Capability radar <span class="info-icon" data-info="Polygon compares maturity across security, governance, rights, retention, and vendor axes.">i</span></h3>
+          <span class="text-muted" style="font-size:0.9rem;">Field-level strengths</span>
+        </div>
+        {% if chart_data.radar.labels %}
+          <canvas id="radarChart" height="220"></canvas>
+        {% else %}
+          <p class="text-muted">Run at least one assessment to unlock the radar view.</p>
+        {% endif %}
+      </div>
+      <div class="panel stack">
+        <div class="card-title">
+          <h3>Field correlation matrix <span class="info-icon" data-info="Cells close to 100% mean two themes trend together; lower scores flag gaps.">i</span></h3>
+          <span class="text-muted" style="font-size:0.9rem;">Similarity between thematic areas</span>
+        </div>
+        {% if correlation_matrix.labels %}
+          <div class="table-scroll">
+            <table class="table-lite heatmap-table">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  {% for label in correlation_matrix.labels %}
+                    <th>{{ label }}</th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for row_label in correlation_matrix.labels %}
+                  {% set row = correlation_matrix.matrix[loop.index0] %}
+                  <tr>
+                    <td>{{ row_label }}</td>
+                    {% for value in row %}
+                      {% set alpha = 0.2 + (value * 0.6) %}
+                      {% set adjusted = alpha if alpha < 0.95 else 0.95 %}
+                      {% set display = (value * 100) | round(0) %}
+                      <td style="background: rgba(37,99,235, {{ '%.2f' % adjusted }}); color:#0f172a;">{{ display }}%</td>
+                    {% endfor %}
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="text-muted">Correlation data becomes available once sections are scored.</p>
+        {% endif %}
+      </div>
+    </div>
+    <div class="panel stack">
+      <div class="card-title">
+        <h3>GDPR article coverage <span class="info-icon" data-info="Radar plotting referenced GDPR Articles (and paragraphs) across DPIA and GAP responses.">i</span></h3>
+        <span class="text-muted" style="font-size:0.9rem;">Article-level readiness</span>
+      </div>
+      {% if chart_data.article_radar.labels %}
+        <canvas id="articleRadarChart" height="240"></canvas>
+      {% else %}
+        <p class="text-muted">No GDPR article references available yet. Submit assessments to populate this chart.</p>
+      {% endif %}
+    </div>
+    <div class="grid-split">
+      <div class="panel stack">
+        <div class="card-title">
+          <h3>Risk correlation <span class="info-icon" data-info="Bubble compares coverage gaps (x-axis), high-risk indicators (y-axis), and readiness score (bubble size) for each module.">i</span></h3>
+        </div>
+        {% if chart_data.risk_scatter.datasets %}
+          <canvas id="riskScatterChart" height="220"></canvas>
+        {% else %}
+          <p class="text-muted">Add assessment data to visualize risk correlation.</p>
+        {% endif %}
+      </div>
+      <div class="panel stack">
+        <div class="card-title">
+          <h3>Section risk leaderboard <span class="info-icon" data-info="Highlights sections with the largest delta to 100% (higher bars = more remediation needed).">i</span></h3>
+        </div>
+        {% if chart_data.section_risk.labels %}
+          <canvas id="sectionRiskChart" height="240"></canvas>
+        {% else %}
+          <p class="text-muted">Complete assessments to highlight section-level risk.</p>
+        {% endif %}
+      </div>
+    </div>
+    <div class="panel stack">
+      <div class="card-title">
+        <div>
+          <h3>Risk matrix <span class="info-icon" data-info="Failed GDPR questions plotted by impact and likelihood. Tackle top-right cells first.">i</span></h3>
+          <p class="text-muted">Likelihood vs. impact mapping of outstanding GDPR gaps.</p>
+        </div>
+        <span class="badge">Failures</span>
+      </div>
+      {% set impact_colors = {'Low':'#e0f2fe','Medium':'#fef3c7','High':'#fee2e2'} %}
+      <div class="table-scroll">
+        <table class="table-lite">
+          <thead>
+            <tr>
+              <th>Likelihood \ Impact</th>
+              {% for impact in impact_levels %}
+                <th>{{ impact }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for likelihood in likelihood_levels %}
+              <tr>
+                <td><strong>{{ likelihood }}</strong></td>
+                {% for impact in impact_levels %}
+                  {% set cell = risk_matrix.grid[likelihood][impact] %}
+                  <td style="background: {{ impact_colors[impact] }};">
+                    <strong>{{ cell | length }}</strong>
+                    {% if cell %}
+                      <div class="text-muted" style="font-size:0.8rem;">{{ cell[0].section or cell[0].question }}</div>
+                    {% endif %}
+                  </td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% if risk_matrix.samples %}
+        <div class="stack">
+          <strong>Examples</strong>
+          <ul class="pill-list">
+            {% for entry in risk_matrix.samples %}
+              <li>
+                {{ entry.question }} · {{ entry.section }}<br />
+                <span class="text-muted" style="font-size:0.85rem;">Impact {{ entry.impact }} / Likelihood {{ entry.likelihood }} · {{ entry.mode | upper }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+    <div class="grid-split">
+      <div class="panel">
+        <div class="card-title">
+          <h3>{{ schema_choices['dpia11'].label }} <span class="info-icon" data-info="Heatmap of section scores for the DPIA module.">i</span></h3>
+          {% if dpia %}
+            <span class="badge">{{ dpia.overall_score.rating }}</span>
+          {% endif %}
+        </div>
+        {% if dpia %}
+          <p class="text-muted">{{ dpia.overall_score.percent }}% overall.</p>
+          <canvas id="dpiaChart" height="200"></canvas>
+        {% else %}
+          <p>No DPIA assessment submitted.</p>
+          <a class="btn btn-secondary" href="{{ url_for('assessment_form', mode='dpia11') }}">Start DPIA</a>
+        {% endif %}
+      </div>
+      <div class="panel">
+        <div class="card-title">
+          <h3>{{ schema_choices['gap'].label }} <span class="info-icon" data-info="Section-by-section GAP readiness; download the package for raw evidence.">i</span></h3>
+          {% if gap %}
+            <span class="badge">{{ gap.overall_score.rating }}</span>
+          {% endif %}
+        </div>
+        {% if gap %}
+          <p class="text-muted">{{ gap.overall_score.percent }}% overall.</p>
+          <canvas id="gapChart" height="200"></canvas>
+        {% else %}
+          <p>No GAP assessment submitted.</p>
+          <a class="btn btn-secondary" href="{{ url_for('assessment_form', mode='gap') }}">Start GAP</a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="panel stack">
+      <div class="card-title">
+        <div>
+          <h3>On-demand AI reports <span class="info-icon" data-info="LLM-written narratives for DPIA/GAP that you can download as Markdown or PDF.">i</span></h3>
+          <p class="text-muted">Generate conversational narratives for executives.</p>
+        </div>
+      </div>
+      <div class="flex-between" style="gap:0.75rem; flex-wrap:wrap;">
+        {% if dpia %}
+          <form method="post" action="{{ url_for('create_module_report', mode='dpia11') }}">
+            <button type="submit" class="btn btn-secondary" data-loading="true" data-loading-text="Generating DPIA…">Generate DPIA report</button>
+          </form>
+        {% endif %}
+        {% if gap %}
+          <form method="post" action="{{ url_for('create_module_report', mode='gap') }}">
+            <button type="submit" class="btn btn-secondary" data-loading="true" data-loading-text="Generating GAP…">Generate GAP report</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+    {% for mode in ['dpia11', 'gap'] %}
+      {% if module_reports.get(mode) %}
+        {% set report = module_reports.get(mode) %}
+        <div class="panel" id="module-report-{{ mode }}">
+          <div class="card-title">
+            <div>
+              <h3>{{ schema_choices[mode].label }} AI report</h3>
+              <p class="text-muted">Run {{ report.run_id }} · {{ report.generated_at }}</p>
+            </div>
+            <span class="badge">LLM</span>
+          </div>
+          <div class="schema-md markdown-body">
+            {{ report.html | safe }}
+          </div>
+          <div class="flex-between" style="margin-top:0.85rem; gap:0.75rem;">
+            <a class="btn btn-secondary" href="{{ url_for('download_module_report', mode=mode, fmt='md') }}">Download Markdown</a>
+            <a class="btn" href="{{ url_for('download_module_report', mode=mode, fmt='pdf') }}">Download PDF</a>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+    <div class="panel">
+      <div class="card-title">
+        <div>
+          <h3>Cookie compliance <span class="info-icon" data-info="Latest consent scan summary with findings, headers, and TLS health.">i</span></h3>
+          {% if cookie_audit %}
+            <p class="text-muted">Audit score {{ cookie_audit.score }}% · {{ cookie_audit.checked_at }}</p>
+          {% else %}
+            <p class="text-muted">Run a cookie audit to measure banner/policy hygiene.</p>
+          {% endif %}
+        </div>
+        <a class="btn btn-secondary" href="{{ url_for('cookie_audit_view') }}">Open audit</a>
+      </div>
+      {% if cookie_audit %}
+        {% set technical = cookie_audit.technical | default({}) %}
+        <p><strong>{{ cookie_audit.summary }}</strong></p>
+        <div class="grid" style="margin-top:0.75rem;">
+          <div>
+            <strong>Findings</strong>
+            <ul class="pill-list">
+              {% for item in cookie_audit.findings %}
+                <li>{{ item }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div>
+            <strong>HTTP security headers</strong>
+            {% set sec_headers = technical.security_headers | default({}) %}
+            <ul class="pill-list">
+              {% for header, meta in sec_headers.items() %}
+                <li>
+                  <strong>{{ header }}</strong> —
+                  {% if meta.present %}
+                    {{ meta.status | capitalize }}
+                  {% else %}
+                    Missing
+                  {% endif %}
+                  {% if meta.detail %}<br /><span class="text-muted" style="font-size:0.85rem;">{{ meta.detail }}</span>{% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div>
+            <strong>TLS overview</strong>
+            {% set tls = technical.tls | default({}) %}
+            <p class="text-muted">
+              Status: {% if tls.ok %}Valid{% else %}Unavailable{% endif %}<br />
+              {% if tls.days_left is not none %}
+                Renewal in {{ tls.days_left }} days<br />
+              {% endif %}
+              {% if tls.issuer %}
+                Issuer: {{ tls.issuer }}<br />
+              {% endif %}
+              HTTPS enforced: {% if technical.https %}Yes{% else %}No{% endif %}
+            </p>
+          </div>
+        </div>
+        <form method="post" action="{{ url_for('toggle_cookie_audit') }}" style="margin-top:0.75rem;">
+          <input type="hidden" name="include" value="{{ 'false' if cookie_audit_include else 'true' }}">
+          <input type="hidden" name="next" value="{{ url_for('results') }}">
+          <button type="submit" class="btn {% if cookie_audit_include %}btn-secondary{% else %}btn{% endif %}" data-loading="true" data-loading-text="Updating…">
+            {% if cookie_audit_include %}
+              Remove from official policy
+            {% else %}
+              Include in official policy
+            {% endif %}
+          </button>
+        </form>
+      {% else %}
+        <p>No audit data captured yet.</p>
+      {% endif %}
+    </div>
+  </section>
+  <section id="error-panel" class="tab-panel">
+    <div class="section-head">
+      <div>
+        <h2>Detailed assessment insights</h2>
+        <p class="text-muted">Drill into every section score, risk indicator, and exported narrative.</p>
+      </div>
+    </div>
+    {% if dpia or gap %}
+      <div class="schema-grid">
+        {% if dpia %}
+        <div class="panel schema-card">
+          <div class="flex-between">
+            <div>
+              <h3>{{ schema_choices['dpia11'].label }}</h3>
+              <p class="text-muted">Overall score <strong>{{ dpia.overall_score.percent }}%</strong> ({{ dpia.overall_score.rating }})</p>
+            </div>
+            <span class="badge">DPIA</span>
+          </div>
+          <div class="grid" style="margin-bottom:1rem;">
+            <div>
+              <strong>High-risk indicators</strong>
+              <ul class="pill-list">
+                {% if dpia.high_risk_indicators %}
+                  {% for item in dpia.high_risk_indicators %}
+                    <li>{{ item }}</li>
+                  {% endfor %}
+                {% else %}
+                  <li>None</li>
+                {% endif %}
+              </ul>
+            </div>
+            <div>
+              <strong>Coverage gaps</strong>
+              <ul class="pill-list">
+                {% if dpia.coverage_gaps %}
+                  {% for gap in dpia.coverage_gaps %}
+                    <li>{{ gap.question }} → {{ gap.mode }} of {{ gap.required_targets | join(', ') }}</li>
+                  {% endfor %}
+                {% else %}
+                  <li>All satisfied</li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="table-lite">
+              <thead>
+                <tr><th>Section</th><th>Score</th></tr>
+              </thead>
+              <tbody>
+                {% for section, payload in dpia.sections.items() %}
+                  <tr>
+                    <td>{{ section }}</td>
+                    <td>{{ payload.percent }}% ({{ payload.earned | round(2) }}/{{ payload.max | round(2) }})</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <details style="margin-top:0.75rem;">
+            <summary>Full narrative</summary>
+            <pre class="schema-md">{{ dpia.markdown }}</pre>
+          </details>
+          <div style="margin-top:0.75rem;">
+            <a class="btn btn-secondary" href="{{ url_for('export_assessment', mode='dpia11') }}">Download DPIA package</a>
+          </div>
+        </div>
+        {% else %}
+        <div class="panel schema-card">
+          <h3>{{ schema_choices['dpia11'].label }}</h3>
+          <p class="text-muted">No DPIA assessment has been captured yet. Run the questionnaire to unlock this report.</p>
+          <a class="btn btn-secondary" href="{{ url_for('assessment_form', mode='dpia11') }}">Start DPIA</a>
+        </div>
+        {% endif %}
+        {% if gap %}
+        <div class="panel schema-card">
+          <div class="flex-between">
+            <div>
+              <h3>{{ schema_choices['gap'].label }}</h3>
+              <p class="text-muted">Overall score <strong>{{ gap.overall_score.percent }}%</strong> ({{ gap.overall_score.rating }})</p>
+            </div>
+            <span class="badge">GAP</span>
+          </div>
+          <div class="grid" style="margin-bottom:1rem;">
+            <div>
+              <strong>High-risk indicators</strong>
+              <ul class="pill-list">
+                {% if gap.high_risk_indicators %}
+                  {% for item in gap.high_risk_indicators %}
+                    <li>{{ item }}</li>
+                  {% endfor %}
+                {% else %}
+                  <li>None</li>
+                {% endif %}
+              </ul>
+            </div>
+            <div>
+              <strong>Coverage gaps</strong>
+              <ul class="pill-list">
+                {% if gap.coverage_gaps %}
+                  {% for entry in gap.coverage_gaps %}
+                    <li>{{ entry.question }} → {{ entry.mode }} of {{ entry.required_targets | join(', ') }}</li>
+                  {% endfor %}
+                {% else %}
+                  <li>All satisfied</li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="table-lite">
+              <thead>
+                <tr><th>Section</th><th>Score</th></tr>
+              </thead>
+              <tbody>
+                {% for section, payload in gap.sections.items() %}
+                  <tr>
+                    <td>{{ section }}</td>
+                    <td>{{ payload.percent }}% ({{ payload.earned | round(2) }}/{{ payload.max | round(2) }})</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <details style="margin-top:0.75rem;">
+            <summary>Full narrative</summary>
+            <pre class="schema-md">{{ gap.markdown }}</pre>
+          </details>
+          <div style="margin-top:0.75rem;">
+            <a class="btn btn-secondary" href="{{ url_for('export_assessment', mode='gap') }}">Download GAP package</a>
+          </div>
+        </div>
+        {% else %}
+        <div class="panel schema-card">
+          <h3>{{ schema_choices['gap'].label }}</h3>
+          <p class="text-muted">No GAP assessment has been captured yet. Run the questionnaire to unlock this report.</p>
+          <a class="btn btn-secondary" href="{{ url_for('assessment_form', mode='gap') }}">Start GAP</a>
+        </div>
+        {% endif %}
+      </div>
+    {% else %}
+      <div class="panel schema-card">
+        <h3>Assessments</h3>
+        <p class="text-muted">No assessments submitted yet. Complete the DPIA or GAP questionnaire to unlock detailed charts.</p>
+        <div class="flex-between" style="gap:0.75rem;">
+          <a class="btn btn-secondary" href="{{ url_for('assessment_form', mode='dpia11') }}">Start DPIA</a>
+          <a class="btn btn-secondary" href="{{ url_for('assessment_form', mode='gap') }}">Start GAP</a>
+        </div>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const chartPayload = {{ chart_data | tojson }};
+    const palette = ['#2563eb', '#0ea5e9', '#2dd4bf', '#f97316', '#facc15', '#a855f7', '#94a3b8'];
+    function renderBarChart(elId, labels, values) {
+      const ctx = document.getElementById(elId);
+      if (!ctx) return;
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Section score (%)',
+            data: values,
+            backgroundColor: palette.slice(0, labels.length),
+            borderRadius: 6,
+          }],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100,
+              ticks: { stepSize: 20 },
+            },
+          },
+        },
+      });
+    }
+    function renderHorizontal(elId, labels, values) {
+      const ctx = document.getElementById(elId);
+      if (!ctx) return;
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Overall %',
+            data: values,
+            backgroundColor: ['#2563eb', '#f97316'],
+            borderRadius: 8,
+          }],
+        },
+        options: {
+          indexAxis: 'y',
+          plugins: {
+            legend: { display: false },
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+              max: 100,
+            },
+          },
+        },
+      });
+    }
+    function renderGauge(elId, value) {
+      const ctx = document.getElementById(elId);
+      if (!ctx) return;
+      const val = Math.max(0, Math.min(100, value || 0));
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Readiness', 'Remaining'],
+          datasets: [{
+            data: [val, 100 - val],
+            backgroundColor: ['#2563eb', '#e5edff'],
+            borderWidth: 0,
+            cutout: '70%',
+          }],
+        },
+        options: {
+          rotation: -90,
+          circumference: 180,
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (context) => context.label === 'Readiness' ? `${context.parsed}% readiness` : undefined,
+              },
+            },
+          },
+        },
+      });
+    }
+    function renderRadar(elId, payload) {
+      const ctx = document.getElementById(elId);
+      if (!ctx || !payload.labels || !payload.labels.length) return;
+      new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: payload.labels,
+          datasets: payload.datasets,
+        },
+        options: {
+          responsive: true,
+          scales: {
+            r: {
+              suggestedMin: 0,
+              suggestedMax: 100,
+              angleLines: { color: '#e4e7ec' },
+              grid: { color: '#e4e7ec' },
+              pointLabels: { font: { size: 11 } },
+            },
+          },
+          plugins: {
+            legend: { position: 'bottom' },
+            tooltip: {
+              callbacks: {
+                label: (context) => {
+                  const dataset = context.dataset || {};
+                  const actual = (dataset.actual || [])[context.dataIndex];
+                  if (actual === null || actual === undefined) {
+                    return `${dataset.label}: not assessed`;
+                  }
+                  return `${dataset.label}: ${actual}%`;
+                },
+              },
+            },
+          },
+          spanGaps: false,
+        },
+      });
+    }
+    function renderBubbleChart(elId, payload) {
+      const ctx = document.getElementById(elId);
+      if (!ctx || !payload.datasets || !payload.datasets.length) return;
+      new Chart(ctx, {
+        type: 'bubble',
+        data: { datasets: payload.datasets },
+        options: {
+          responsive: true,
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const data = context.raw || {};
+                  return `${context.dataset.label}: gaps ${data.x}, high-risk ${data.y}`;
+                },
+              },
+            },
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+              suggestedMax: payload.max ? payload.max.x : undefined,
+              title: { display: true, text: 'Coverage gaps' },
+            },
+            y: {
+              beginAtZero: true,
+              suggestedMax: payload.max ? payload.max.y : undefined,
+              title: { display: true, text: 'High-risk indicators' },
+            },
+          },
+        },
+      });
+    }
+    function renderSectionRisk(elId, payload) {
+      const ctx = document.getElementById(elId);
+      if (!ctx || !payload.labels || !payload.labels.length) return;
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: payload.labels,
+          datasets: [{
+            label: 'Risk (distance from 100%)',
+            data: payload.values,
+            backgroundColor: '#f97316',
+          }],
+        },
+        options: {
+          indexAxis: 'y',
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { beginAtZero: true, max: 100 },
+          },
+        },
+      });
+    }
+    renderHorizontal('overallChart', chartPayload.overall.labels, chartPayload.overall.values);
+    renderBarChart('dpiaChart', chartPayload.dpia.labels, chartPayload.dpia.values);
+    renderBarChart('gapChart', chartPayload.gap.labels, chartPayload.gap.values);
+    const gaugeCanvas = document.getElementById('readinessDial');
+    if (gaugeCanvas) {
+      renderGauge('readinessDial', parseFloat(gaugeCanvas.dataset.value || '0'));
+    }
+    if (chartPayload.radar) {
+      renderRadar('radarChart', chartPayload.radar);
+    }
+    if (chartPayload.article_radar && chartPayload.article_radar.labels && chartPayload.article_radar.labels.length) {
+      renderRadar('articleRadarChart', chartPayload.article_radar);
+    }
+    if (chartPayload.risk_scatter && chartPayload.risk_scatter.datasets && chartPayload.risk_scatter.datasets.length) {
+      renderBubbleChart('riskScatterChart', chartPayload.risk_scatter);
+    }
+    if (chartPayload.section_risk && chartPayload.section_risk.labels && chartPayload.section_risk.labels.length) {
+      renderSectionRisk('sectionRiskChart', chartPayload.section_risk);
+    }
+    const counters = document.querySelectorAll('[data-count]');
+    const animateCounter = (el) => {
+      const target = parseFloat(el.dataset.count || '0');
+      let start = 0;
+      const duration = 800;
+      const step = (timestamp) => {
+        if (!el._startTime) {
+          el._startTime = timestamp;
+        }
+        const progress = Math.min((timestamp - el._startTime) / duration, 1);
+        el.innerText = Math.round(progress * target);
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        }
+      };
+      requestAnimationFrame(step);
+    };
+    const counterObserver = new IntersectionObserver((entries, obs) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          animateCounter(entry.target);
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.6 });
+    counters.forEach((counter) => {
+      counterObserver.observe(counter);
+    });
+    const tabButtons = document.querySelectorAll('.tab-nav button');
+    const panels = document.querySelectorAll('.tab-panel');
+    tabButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        tabButtons.forEach((b) => b.classList.remove('active'));
+        panels.forEach((panel) => panel.classList.remove('active'));
+        btn.classList.add('active');
+        const target = document.getElementById(btn.dataset.target);
+        if (target) {
+          target.classList.add('active');
+        }
+      });
+    });
+  </script>
+{% endblock %}

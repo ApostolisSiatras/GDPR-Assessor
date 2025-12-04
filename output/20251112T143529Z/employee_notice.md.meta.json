@@ -1,0 +1,14 @@
+{
+  "model": "llama3.1:8b",
+  "template_hash": "405367cb75402a4be30819afcf5aed8246dccae64f986d0137fa6acd4222ae82",
+  "context_hash": "d32f9630583aefd699919b80dca5f0acacc946d54737cc5c9505739f7539c9fc",
+  "generated_at": "2025-11-12T14:36:01.064330Z",
+  "doc_type": "employee_notice",
+  "filename": "employee_notice.md",
+  "run_id": "20251112T143529Z",
+  "encrypted": false,
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,299 @@
+{% extends "layout.html" %}
+
+{% set category_counts = namespace(data={}) %}
+{% set party_counts = namespace(first=0, third=0) %}
+
+{% block content %}
+  <section class="hero">
+    <div class="flex-between">
+      <div>
+        <h1>Cookie compliance audit</h1>
+        <p>Scan a public website to estimate consent hygiene, catalogue cookies, and surface remediation steps.</p>
+      </div>
+      <a class="btn btn-secondary" href="{{ url_for('results') }}">Back to analytics</a>
+    </div>
+  </section>
+
+  <div class="panel stack">
+    <div class="card-title">
+      <div>
+        <h3>Run a new audit <span class="info-icon" data-info="Enter any landing page URL to pull banners, trackers, and TLS info.">i</span></h3>
+        <p class="text-muted">We load the landing page, inspect response headers, and summarise critical gaps.</p>
+      </div>
+    </div>
+    <form method="post" class="form-grid" style="align-items:flex-end;">
+      <div class="field-group" style="flex:1;">
+        <label for="audit-url">Website URL</label>
+        <input id="audit-url" type="url" name="url" placeholder="https://example.com" required />
+      </div>
+      <button type="submit" class="btn" name="action" value="audit" data-loading="true" data-loading-text="Auditing…">Run audit</button>
+    </form>
+    {% if error %}
+      <div class="notice">{{ error }}</div>
+    {% endif %}
+  </div>
+
+  {% if audit %}
+    {% set technical = audit.technical | default({}) %}
+    {% set metadata = audit.page_metadata | default({}) %}
+    {% for cookie in audit.cookies %}
+      {% set cat = (cookie.category or 'unclassified') %}
+      {% set current = category_counts.data.get(cat, 0) + 1 %}
+      {% set _ = category_counts.data.update({cat: current}) %}
+      {% if cookie.third_party %}
+        {% set party_counts.third = party_counts.third + 1 %}
+      {% else %}
+        {% set party_counts.first = party_counts.first + 1 %}
+      {% endif %}
+    {% endfor %}
+    <div class="panel stack">
+      <div class="card-title">
+        <div>
+          <h3>Latest audit <span class="info-icon" data-info="Score, summary, and gap list for your most recent cookie scan.">i</span></h3>
+          <p class="text-muted">{{ audit.url }} · {{ audit.checked_at }}</p>
+        </div>
+        <span class="badge">Score {{ audit.score }}%</span>
+      </div>
+      <p><strong>{{ audit.summary }}</strong></p>
+      <div class="grid-split">
+        <div>
+          <strong>Smart compliance gaps</strong>
+          {% if audit.compliance_gaps %}
+            <div class="stack">
+              {% for gap in audit.compliance_gaps %}
+                <div class="stat-card" style="background:#fff;">
+                  <div class="flex-between" style="gap:0.5rem;">
+                    <strong>{{ gap.area }}</strong>
+                    <span class="badge" style="background:{% if gap.severity == 'high' %}#fee4e2{% elif gap.severity == 'medium' %}#fef0c7{% else %}#e0f2fe{% endif %}; color:#0f172a;">{{ gap.severity | capitalize }}</span>
+                  </div>
+                  <p class="text-muted" style="margin:0.35rem 0;">{{ gap.detail }}</p>
+                  {% if gap.evidence %}
+                    <p class="text-muted" style="font-size:0.85rem;">Evidence: {{ gap.evidence }}</p>
+                  {% endif %}
+                  <p style="margin:0;"><em>{{ gap.recommendation }}</em></p>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="text-muted">Nothing critical detected.</p>
+          {% endif %}
+        </div>
+        <div class="grid">
+          <div>
+            <strong>Findings</strong>
+            <ul class="pill-list">
+              {% for entry in audit.findings %}
+                <li>{{ entry }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div>
+            <strong>Recommendations</strong>
+            <ul class="pill-list">
+              {% for entry in audit.recommendations %}
+                <li>{{ entry }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-split">
+      <div class="panel stack">
+        <h4>HTTP security headers <span class="info-icon" data-info="Shows whether HSTS, CSP, Referrer-Policy, etc. are properly configured.">i</span></h4>
+        {% set sec_headers = technical.security_headers | default({}) %}
+        <ul class="pill-list">
+          {% for header, meta in sec_headers.items() %}
+            <li>
+              <strong>{{ header }}</strong> — {% if meta.present %}{{ meta.status | capitalize }}{% else %}Missing{% endif %}
+              {% if meta.detail %}<br /><span class="text-muted" style="font-size:0.85rem;">{{ meta.detail }}</span>{% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="panel stack">
+        <h4>TLS & infrastructure <span class="info-icon" data-info="Certificate validity, issuer, server metadata, and response metrics.">i</span></h4>
+        {% set tls = technical.tls | default({}) %}
+        {% set headers = technical.headers | default({}) %}
+        {% set metrics = technical.metrics | default({}) %}
+        <p class="text-muted">
+          Status: {% if tls.ok %}Valid{% else %}Unavailable{% endif %}<br />
+          {% if tls.days_left is not none %}Renewal in {{ tls.days_left }} days<br />{% endif %}
+          {% if tls.issuer %}Issuer: {{ tls.issuer }}<br />{% endif %}
+          HTTPS enforced: {% if technical.https %}Yes{% else %}No{% endif %}<br />
+          {% if headers.server %}Server: {{ headers.server }}<br />{% endif %}
+          {% if headers.powered_by %}Powered by: {{ headers.powered_by }}<br />{% endif %}
+          {% if metrics.response_time_ms is not none %}Response time: {{ metrics.response_time_ms }} ms<br />{% endif %}
+          {% if metrics.content_length is not none %}Content downloaded: {{ metrics.content_length }} bytes{% endif %}
+        </p>
+      </div>
+    </div>
+
+    <div class="grid-split">
+      <div class="panel stack">
+        <h4>Consent & tracking signals <span class="info-icon" data-info="Detects known CMP scripts and tracker vendors loading before consent.">i</span></h4>
+        <p class="text-muted">Banner detected: {% if audit.banner_detected %}Yes{% else %}No{% endif %}</p>
+        {% if audit.banner_detected and metadata.banner_context %}
+          <p class="text-muted" style="font-size:0.9rem;">{{ metadata.banner_context }}</p>
+        {% endif %}
+        <strong>Consent platforms</strong>
+        <ul class="pill-list">
+          {% if audit.consent_signals %}
+            {% for signal in audit.consent_signals %}
+              <li>{{ signal }}</li>
+            {% endfor %}
+          {% else %}
+            <li>None detected</li>
+          {% endif %}
+        </ul>
+        <strong>Tracker vendors</strong>
+        <ul class="pill-list">
+          {% if audit.tracker_signals %}
+            {% for signal in audit.tracker_signals %}
+              <li>{{ signal }}</li>
+            {% endfor %}
+          {% else %}
+            <li>None detected in first response</li>
+          {% endif %}
+        </ul>
+      </div>
+      <div class="panel stack">
+        <h4>Page metadata <span class="info-icon" data-info="Language tags, script/form counts, and third-party script hosts.">i</span></h4>
+        <p class="text-muted">
+          Title: {{ metadata.title or 'Unavailable' }}<br />
+          Language: {{ metadata.language or 'Not declared' }}<br />
+          Scripts: {{ metadata.script_count | default(0) }} · Forms: {{ metadata.form_count | default(0) }} · Links: {{ metadata.link_count | default(0) }}
+        </p>
+        <strong>Third-party script hosts</strong>
+        <ul class="pill-list">
+          {% if metadata.third_party_script_hosts %}
+            {% for host in metadata.third_party_script_hosts %}
+              <li>{{ host }}</li>
+            {% endfor %}
+          {% else %}
+            <li>No external script hosts detected on first load</li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+
+    <div class="panel stack">
+      <div class="flex-between" style="align-items:flex-start;">
+        <div>
+          <h4>Cookie policy links <span class="info-icon" data-info="Links detected on the landing page that mention cookies/policy/notice.">i</span></h4>
+          {% if audit.policy_links %}
+            <ul class="pill-list">
+              {% for link in audit.policy_links %}
+                <li><a href="{{ link }}" target="_blank" rel="noopener noreferrer">{{ link }}</a></li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted">None detected.</p>
+          {% endif %}
+        </div>
+        <form method="post" action="{{ url_for('toggle_cookie_audit') }}">
+          <input type="hidden" name="include" value="{{ 'false' if include_in_policy else 'true' }}">
+          <input type="hidden" name="next" value="{{ url_for('cookie_audit_view') }}">
+          <button type="submit" class="btn {% if include_in_policy %}btn-secondary{% else %}btn{% endif %}" data-loading="true" data-loading-text="Updating…">
+            {% if include_in_policy %}
+              Remove from official policy
+            {% else %}
+              Include in official policy
+            {% endif %}
+          </button>
+        </form>
+      </div>
+      <div class="grid">
+        <div>
+          <h4>Cookie categories</h4>
+          {% if category_counts.data %}
+            <canvas id="cookieCategoryChart" height="220"></canvas>
+          {% else %}
+            <p class="text-muted">No cookies to group.</p>
+          {% endif %}
+        </div>
+        <div>
+          <h4>Origin split</h4>
+          {% if audit.cookies %}
+            <canvas id="cookieOriginChart" height="220"></canvas>
+          {% else %}
+            <p class="text-muted">No cookies detected.</p>
+          {% endif %}
+        </div>
+      </div>
+      <h4>Cookie inventory ({{ audit.cookies | length }}) <span class="info-icon" data-info="Full table of observed cookies with category, flags, and lifespan.">i</span></h4>
+      {% if audit.cookies %}
+        <div class="table-scroll">
+          <table class="table-lite">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Domain</th>
+                <th>Category</th>
+                <th>3rd-party</th>
+                <th>Persistent</th>
+                <th>Duration</th>
+                <th>Flags</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for cookie in audit.cookies %}
+                <tr>
+                  <td style="font-weight:600;">{{ cookie.name }}</td>
+                  <td>{{ cookie.domain }}</td>
+                  <td style="text-transform:capitalize;">{{ cookie.category | replace('_', ' ') }}</td>
+                  <td>{% if cookie.third_party %}Yes{% else %}No{% endif %}</td>
+                  <td>{% if cookie.persistent %}Yes{% else %}Session{% endif %}</td>
+                  <td>{% if cookie.duration_days is not none %}{{ cookie.duration_days }} days{% else %}Session{% endif %}</td>
+                  <td>
+                    Secure: {% if cookie.secure %}Yes{% else %}No{% endif %} ·
+                    HttpOnly: {% if cookie.http_only %}Yes{% else %}No{% endif %} ·
+                    SameSite: {{ cookie.same_site or 'Not set' }}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-muted">No cookies observed on initial load.</p>
+      {% endif %}
+    </div>
+  {% else %}
+    <div class="panel">
+      <p>No audit has been performed yet. Enter a URL above to generate a report.</p>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  {% if audit %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      (function() {
+        const categoryData = {{ category_counts.data | tojson }};
+        const partyData = { first: {{ party_counts.first }}, third: {{ party_counts.third }} };
+        function renderPie(elId, labels, values, colors) {
+          const ctx = document.getElementById(elId);
+          if (!ctx) return;
+          new Chart(ctx, {
+            type: 'doughnut',
+            data: { labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }] },
+            options: { responsive: true, plugins: { legend: { position: 'bottom' } } },
+          });
+        }
+        if (Object.keys(categoryData).length) {
+          const labels = Object.keys(categoryData).map((label) => label.replace('_', ' '));
+          const values = Object.values(categoryData);
+          const palette = ['#2563eb','#0ea5e9','#10b981','#f97316','#a855f7','#64748b'];
+          renderPie('cookieCategoryChart', labels, values, palette.slice(0, labels.length));
+        }
+        if (partyData.first || partyData.third) {
+          renderPie('cookieOriginChart', ['First-party', 'Third-party'], [partyData.first, partyData.third], ['#22c55e', '#f97316']);
+        }
+      })();
+    </script>
+  {% endif %}
+{% endblock %}

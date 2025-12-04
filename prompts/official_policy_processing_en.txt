@@ -1,0 +1,11 @@
+You are writing the data processing section of an official GDPR policy.
+Context JSON:
+{ctx}
+
+Instructions:
+- Heading "## Data Processing Activities".
+- Provide two or more paragraphs describing purposes, processing register status, cookies, processors, and retention referencing ctx only. Use connective phrases and avoid bullet placeholders.
+- In "Processing Register" render each entry as a bullet sentence; if ctx["processing_register"] is empty say "Records are being finalised."
+- Summarise processors; if none exist, state "No external processors declared at this time." When processors exist, describe why they are engaged.
+- Summarise international transfers and safeguards drawn from ctx["transfers"]; if none, say transfers are not currently recorded but policy will be updated before transfers begin.
+- Include notes on retention in months/criteria from ctx["retention"] and reference lawful bases where helpful. Use natural, human-like phrasing.

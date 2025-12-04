@@ -1,0 +1,72 @@
+[
+  {
+    "id": "110de6ab7969",
+    "kind": "token",
+    "label": "Token (auditor)",
+    "value": "eyJleHAiOiIyMDI1LTExLTI0VDIwOjEwOjQ3Ljk3NjYxOSswMDowMCIsImlhdCI6IjIwMjUtMTEtMjRUMTk6MTA6NDcuOTc2NjE5KzAwOjAwIiwibm9uY2UiOiJhN1FWMm5KNTNYRSIsInByb2ZpbGUiOiJhdWRpdG9yIiwicmVmIjoiNzU1MzYwIiwicm9sZSI6ImFkdmFuY2VkIn0.wE_CX6nhIKTuAWXafRU_K6KcNS_ypnBbD1MSp61xmLs",
+    "expires_at": "2025-11-24T20:10:47.976201+00:00"
+  },
+  {
+    "id": "87fad7471601",
+    "kind": "quick-basic",
+    "label": "Quick (basic)",
+    "value": "BAS-403320",
+    "expires_at": "2025-11-24T20:10:47.976201+00:00"
+  },
+  {
+    "id": "077c7320b99f",
+    "kind": "quick-advanced",
+    "label": "Quick (advanced)",
+    "value": "ADV-528281",
+    "expires_at": "2025-11-24T20:10:47.976201+00:00"
+  },
+  {
+    "id": "083b1929c27e",
+    "kind": "quick-premium",
+    "label": "Quick (premium)",
+    "value": "PRE-504418",
+    "expires_at": "2025-11-24T20:10:47.976201+00:00"
+  },
+  {
+    "id": "f4e5d38116b9",
+    "kind": "quick-admin",
+    "label": "Quick (admin)",
+    "value": "ADM-707207",
+    "expires_at": "2025-11-24T20:10:47.976201+00:00"
+  },
+  {
+    "id": "f1bef5110c5e",
+    "kind": "token",
+    "label": "Token (viewer)",
+    "value": "eyJleHAiOiIyMDI1LTExLTI0VDIwOjExOjAxLjk3NjM1NyswMDowMCIsImlhdCI6IjIwMjUtMTEtMjRUMTk6MTE6MDEuOTc2MzU3KzAwOjAwIiwibm9uY2UiOiJOWmRYWFJpYTNNdyIsInByb2ZpbGUiOiJ2aWV3ZXIiLCJyZWYiOiI3NTUzNjAiLCJyb2xlIjoiYmFzaWMifQ.XKyMu5sLd_ARKFSM3_LezqB7n5TgLaRIJ911Z022Upk",
+    "expires_at": "2025-11-24T20:11:01.976331+00:00"
+  },
+  {
+    "id": "ec8e8a9947ff",
+    "kind": "quick-basic",
+    "label": "Quick (basic)",
+    "value": "BAS-286080",
+    "expires_at": "2025-11-24T20:11:01.976331+00:00"
+  },
+  {
+    "id": "ad09c92d3af5",
+    "kind": "quick-advanced",
+    "label": "Quick (advanced)",
+    "value": "ADV-597923",
+    "expires_at": "2025-11-24T20:11:01.976331+00:00"
+  },
+  {
+    "id": "06cb8637d332",
+    "kind": "quick-premium",
+    "label": "Quick (premium)",
+    "value": "PRE-416667",
+    "expires_at": "2025-11-24T20:11:01.976331+00:00"
+  },
+  {
+    "id": "af9eacfa1a5a",
+    "kind": "quick-admin",
+    "label": "Quick (admin)",
+    "value": "ADM-473409",
+    "expires_at": "2025-11-24T20:11:01.976331+00:00"
+  }
+]

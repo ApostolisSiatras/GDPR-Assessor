@@ -1,0 +1,39 @@
+{
+  "Q-GAP-001": "YES",
+  "Q-GAP-002": "PARTIAL",
+  "Q-GAP-003": "YES",
+  "Q-GAP-004": "YES",
+  "Q-GAP-005": "YES",
+  "Q-GAP-006": "YES",
+  "Q-GAP-007": "YES",
+  "Q-GAP-008": "YES",
+  "Q-GAP-009": "YES",
+  "Q-GAP-010": "YES",
+  "Q-GAP-011": "YES",
+  "Q-GAP-012": "YES",
+  "Q-GAP-012A": [
+    "ENC_AT_REST",
+    "ENC_IN_TRANSIT",
+    "DLP"
+  ],
+  "Q-GAP-013": "YES",
+  "Q-GAP-014": "YES",
+  "Q-GAP-015": "YES",
+  "Q-GAP-016": "NO",
+  "Q-GAP-017": "NO",
+  "Q-GAP-018": "NA",
+  "Q-GAP-019": "NO",
+  "Q-GAP-020": "YES",
+  "Q-GAP-021": "YES",
+  "Q-GAP-021A": [
+    "SECURITY_QUESTIONNAIRE",
+    "AUDIT_RIGHTS"
+  ],
+  "Q-GAP-022": "YES",
+  "Q-GAP-023": "YES",
+  "Q-GAP-024": "YES",
+  "Q-GAP-025": "YES",
+  "Q-GAP-026": "PRIVACT",
+  "Q-GAP-027": "Dr Christos Kalloniatis",
+  "Q-GAP-029": "Sccs"
+}

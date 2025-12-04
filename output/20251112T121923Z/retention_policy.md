@@ -1,0 +1,49 @@
+# Data Retention Policy
+Last updated: 2025-11-12
+
+## Scope
+This data retention policy applies to all personal data processed by PRIVACT P.C. (the "Organization") in the course of its business activities.
+
+## Retention Schedule
+The following categories of personal data will be retained for the specified periods:
+
+* **Customer Data**: 5 years from last interaction
+	+ Reason: To comply with contractual obligations and tax laws
+* **Financial Data**: 7 years from transaction date
+	+ Reason: To comply with financial regulations and tax laws
+* **HR Data**: 3 years from employment termination
+	+ Reason: To comply with labor laws and regulations
+
+## Lawful Bases & Justification
+The Organization relies on the following lawful bases for processing personal data:
+
+* **Contractual Necessity**: To fulfill contractual obligations to customers and suppliers
+* **Legitimate Interest**: To improve customer experience, detect and prevent fraud, and ensure business continuity
+
+Justification: The Organization has assessed the necessity and proportionality of each retention period and has determined that they are necessary for the purposes stated above.
+
+## Storage & Security
+Personal data will be stored on secure servers located in [insert location]. Access to personal data will be restricted to authorized personnel only. The Organization will implement appropriate security measures, including:
+
+* Encryption of personal data at rest and in transit
+* Regular backups and disaster recovery procedures
+* Secure protocols for data transfer
+
+## Deletion & Destruction
+Personal data will be deleted or destroyed in accordance with the following schedule:
+
+* **Customer Data**: 5 years from last interaction (after which it will be anonymized)
+* **Financial Data**: 7 years from transaction date (after which it will be archived)
+* **HR Data**: 3 years from employment termination (after which it will be deleted)
+
+## Roles & Contact
+The following roles are responsible for data retention and deletion:
+
+* **Data Protection Officer (DPO)**: Dr. Christos Kalloniatis (Email: [insert email])
+* **IT Manager**: [Insert name] (Email: [insert email])
+
+Rights of Data Subjects:
+* The right to erasure (Article 17 GDPR): Data subjects have the right to request deletion of their personal data.
+* The right to object (Article 21 GDPR): Data subjects have the right to object to processing of their personal data for direct marketing purposes.
+
+Note: This policy is subject to change and will be reviewed annually.

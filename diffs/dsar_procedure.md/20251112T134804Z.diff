@@ -1,0 +1,79 @@
+--- 20251112T123637Z/dsar_procedure.md
++++ 20251112T134804Z/dsar_procedure.md
+@@ -2,54 +2,37 @@
+ Last updated: 2025-11-12
+ 
+ ## Purpose
+-This procedure outlines the steps to be taken when handling Data Subject Access Requests (DSARs) in accordance with the General Data Protection Regulation (GDPR).
++This procedure outlines the steps to be taken when handling Data Subject Access Requests (DSARs) in accordance with applicable data protection laws.
+ 
+ ## Intake & Verification
+-1. Identify and verify the requestor's identity.
+-2. Confirm that the request is a DSAR under GDPR.
+-3. Check if the request is time-barred or incomplete.
+-
+-### Safeguards
+-* Lawful bases: Consent, Contract, Legal Obligation (declared in ctx.lawful_bases.declared)
+-* Processors: Controller, Joint Controller, Processor (listed in ctx.processors)
++1. Identify and acknowledge receipt of a DSAR from an individual.
++2. Verify the identity of the requester using the information provided.
++3. Check if the request is complete and includes all necessary details.
+ 
+ ## Assessment & Coordination
+-1. Determine the scope of the request.
+-2. Identify relevant data and systems involved.
+-3. Assess the feasibility of providing the requested information.
+-
+-### Safeguards
+-* Transfers: Adequacy, SCC, BCR (mechanisms listed in ctx.transfers[0].mechanisms)
+-* Retention: 1 month retention period (defined in ctx.retention.months)
++1. Determine the lawful basis for processing the personal data requested, referencing [lawful bases](#lawful_bases) in ctx.
++2. Identify any processors involved in the processing of the data, as listed in [processors](#processors) in ctx.
++3. Assess if any transfers of personal data have occurred, referencing [transfers](#transfers) in ctx.
++4. Determine the retention period for the requested data, referencing [retention](#retention) in ctx.
+ 
+ ## Response Content
+-1. Provide a response within the specified timeframe.
+-2. Include all requested information, excluding sensitive data.
+-3. Offer an explanation for any withheld or redacted information.
+-
+-### Safeguards
+-* Rights: Data subject's rights under GDPR (referenced in ctx.sections.E.Rights)
+-* Security controls: Implemented security measures to protect personal data (listed in ctx.security_measures)
++1. Provide a clear and concise response to the requester, including:
++	* A description of the personal data processed.
++	* The purposes for which the data was collected and processed.
++	* Any third parties with whom the data has been shared.
++	* Details on how the individual's rights have been exercised.
++2. Include information on applicable security controls, such as encryption and access controls.
+ 
+ ## Timelines & Escalations
+-1. Respond to DSARs within 30 days.
+-2. Escalate complex or high-priority requests to the Data Protection Officer (DPO).
+-
+-### Safeguards
+-* Risk rating: Strong risk rating (defined in ctx.risk.rating)
+-* Earned scores: A.Context, B.Stakeholders, B.Transfers, C.Risk, D.Security, E.Rights, F.Residual (listed in ctx.sections)
++1. Respond to DSARs within [30 calendar days](https://ico.org.uk/for-organisations/guide-to-data-protection/guide-to-the-general-data-protection-regulation-gdpr/data-subject-requests/) of receipt.
++2. Escalate complex or high-priority requests to the Data Protection Officer (DPO) or designated team.
+ 
+ ## Recordkeeping
+-1. Maintain a record of all DSARs received.
+-2. Document the response and any actions taken.
+-
+-### Safeguards
+-* Processor details: Controller, Joint Controller, Processor (listed in ctx.processors)
+-* Transfer mechanisms: Adequacy, SCC, BCR (mechanisms listed in ctx.transfers[0].mechanisms)
++1. Maintain a record of all DSARs received, including:
++	* Requester's details and contact information.
++	* Date and time of receipt.
++	* Response provided.
++2. Store records securely in accordance with [retention](#retention) policies.
+ 
+ ## Contact
+-For more information or to submit a DSAR, please contact our Data Protection contact at [insert contact details].
+-
+-### Safeguards
+-* Organisation's name and sector: Redacted Organisation, Not provided (defined in ctx.org.name and ctx.org.sector)
+-* Website: Not available (defined in ctx.org.website)
++For any questions or concerns regarding this procedure, please contact the Data Protection Officer at [DOTSOFT](mailto:DOTSOFT).

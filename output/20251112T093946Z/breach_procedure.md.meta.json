@@ -1,0 +1,14 @@
+{
+  "model": "llama3.1:8b",
+  "template_hash": "eb0b289e9b1139946ce553d5b353b0f314fe3a83e0207cd77ae82c97568a9017",
+  "context_hash": "bf87fa71c25c52071840e4e3e434449a04e5dcdc9de2ab88dabf9d7cbf4a9f7c",
+  "generated_at": "2025-11-12T09:41:02.065281Z",
+  "doc_type": "breach_procedure",
+  "filename": "breach_procedure.md",
+  "run_id": "20251112T093946Z",
+  "encrypted": false,
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

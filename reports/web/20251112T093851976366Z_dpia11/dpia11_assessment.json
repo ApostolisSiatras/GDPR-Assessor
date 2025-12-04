@@ -1,0 +1,221 @@
+{
+  "generated_at": "2025-11-12T09:38:51.976062Z",
+  "schema": "dpia(1.1)",
+  "sections": {
+    "A.Context": {
+      "earned": 1.2,
+      "max": 2.0,
+      "percent": 60.0
+    },
+    "B.Stakeholders": {
+      "earned": 1.0,
+      "max": 2.0,
+      "percent": 50.0
+    },
+    "B.Transfers": {
+      "earned": 1.0,
+      "max": 1.0,
+      "percent": 100.0
+    },
+    "C.Risk": {
+      "earned": 4.0,
+      "max": 4.0,
+      "percent": 100.0
+    },
+    "D.Security": {
+      "earned": 6.0,
+      "max": 7.0,
+      "percent": 85.7
+    },
+    "E.Rights": {
+      "earned": 2.0,
+      "max": 2.0,
+      "percent": 100.0
+    },
+    "F.Residual": {
+      "earned": 1.0,
+      "max": 1.0,
+      "percent": 100.0
+    }
+  },
+  "overall_score": {
+    "earned": 16.2,
+    "max": 19.0,
+    "percent": 85.3,
+    "rating": "Strong"
+  },
+  "coverage_gaps": [
+    {
+      "question": "Q-DPIA-025",
+      "section": "E.Rights",
+      "text": "Rights processes implemented (select).",
+      "required_targets": [
+        "ACCESS",
+        "ERASURE",
+        "OBJECTION",
+        "PORTABILITY",
+        "RECTIFICATION",
+        "RESTRICTION"
+      ],
+      "selected": [
+        "ACCESS",
+        "ERASURE",
+        "PORTABILITY",
+        "RECTIFICATION"
+      ],
+      "mode": "ALL"
+    }
+  ],
+  "high_risk_indicators": [
+    "Special-category data present (Art.9).",
+    "Automated decision-making/profiling reported (Art.22)."
+  ],
+  "gdpr_articles": {
+    "Art.4(1)": [
+      "Q-DPIA-001: YES",
+      "Q-DPIA-003: IDENTITY, CONTACT, FINANCIAL, HEALTH, BIOMETRIC"
+    ],
+    "Art.5(1)(a)": [
+      "Q-DPIA-001A: CUSTOMERS, EMPLOYEES, CONTRACTORS, USERS, PROSPECTS, VISITORS, CHILDREN, VULNERABLE_ADULTS, OTHER"
+    ],
+    "Art.5(1)(b)": [
+      "Q-DPIA-002: HR_ADMINISTRATION, PAYROLL, MARKETING, ADVERTISING, ANALYTICS, SERVICE_PROVISION",
+      "Q-DPIA-007: YES"
+    ],
+    "Art.9": [
+      "Q-DPIA-004: HEALTH, BIOMETRIC, GENETIC, ETHNIC"
+    ],
+    "Recital 91": [
+      "Q-DPIA-005: LOW_<=1000",
+      "Q-DPIA-014A: PROFILING, BEHAVIOR_TRACKING, CCTV",
+      "Q-DPIA-016: YES"
+    ],
+    "Art.6": [
+      "Q-DPIA-006: CONSENT, CONTRACT, LEGAL_OBLIGATION, VITAL_INTERESTS, PUBLIC_TASK, LEGITIMATE_INTERESTS"
+    ],
+    "Art.5(1)(e)": [
+      "Q-DPIA-008: 1"
+    ],
+    "Art.4(7)-(8)": [
+      "Q-DPIA-009: CONTROLLER"
+    ],
+    "Art.26": [
+      "Q-DPIA-010: NO"
+    ],
+    "Art.44-49": [
+      "Q-DPIA-011: YES"
+    ],
+    "Art.46": [
+      "Q-DPIA-012: ADEQUACY, SCC, BCR, DEROGATION_ART49"
+    ],
+    "Art.28": [
+      "Q-DPIA-013: YES"
+    ],
+    "Art.22": [
+      "Q-DPIA-014: YES"
+    ],
+    "Recital 75": [
+      "Q-DPIA-015: YES",
+      "Q-DPIA-017: YES"
+    ],
+    "Art.32": [
+      "Q-DPIA-018: PARTIAL",
+      "Q-DPIA-021: YES"
+    ],
+    "Art.32(1)(a)": [
+      "Q-DPIA-019A: PARTIAL",
+      "Q-DPIA-019B: YES"
+    ],
+    "Art.32(1)(c)": [
+      "Q-DPIA-020: YES"
+    ],
+    "Art.30": [
+      "Q-DPIA-021: YES"
+    ],
+    "Art.39(1)(b)": [
+      "Q-DPIA-022: YES"
+    ],
+    "Art.33-34": [
+      "Q-DPIA-023: YES"
+    ],
+    "Art.13-14": [
+      "Q-DPIA-024: YES"
+    ],
+    "Art.15-22": [
+      "Q-DPIA-025: ACCESS, RECTIFICATION, ERASURE, PORTABILITY"
+    ],
+    "Art.7": [
+      "Q-DPIA-026: YES"
+    ],
+    "Art.21": [
+      "Q-DPIA-026: YES"
+    ],
+    "Recital 76": [
+      "Q-DPIA-027: VERY_LOW",
+      "Q-DPIA-028: VERY_LOW"
+    ],
+    "Art.35(7)(d)": [
+      "Q-DPIA-029: YES"
+    ]
+  },
+  "key_facts": {
+    "data_subjects": [
+      "CUSTOMERS",
+      "EMPLOYEES",
+      "CONTRACTORS",
+      "USERS",
+      "PROSPECTS",
+      "VISITORS",
+      "CHILDREN",
+      "VULNERABLE_ADULTS",
+      "OTHER"
+    ],
+    "purposes": [
+      "HR_ADMINISTRATION",
+      "PAYROLL",
+      "MARKETING",
+      "ADVERTISING",
+      "ANALYTICS",
+      "SERVICE_PROVISION"
+    ],
+    "data_categories": [
+      "IDENTITY",
+      "CONTACT",
+      "FINANCIAL",
+      "HEALTH",
+      "BIOMETRIC"
+    ],
+    "special_categories": [
+      "HEALTH",
+      "BIOMETRIC",
+      "GENETIC",
+      "ETHNIC"
+    ],
+    "legal_basis": [
+      "CONSENT",
+      "CONTRACT",
+      "LEGAL_OBLIGATION",
+      "VITAL_INTERESTS",
+      "PUBLIC_TASK",
+      "LEGITIMATE_INTERESTS"
+    ],
+    "processors": [
+      "CONTROLLER"
+    ],
+    "transfers": {
+      "flag": "YES",
+      "mechanisms": [
+        "ADEQUACY",
+        "SCC",
+        "BCR",
+        "DEROGATION_ART49"
+      ]
+    },
+    "rights_processes": [
+      "ACCESS",
+      "RECTIFICATION",
+      "ERASURE",
+      "PORTABILITY"
+    ]
+  }
+}

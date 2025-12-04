@@ -1,0 +1,20 @@
+{
+  "model": "llama3.1:8b",
+  "template_hash": "9128f904cf5499d1d18f97c8b1de97ff6df846903f0049b273d27d7f6f42a3a0",
+  "context_hash": "149d18bcf63abcd66a5ecb0ff8054ab64a14baed1eb7c177990df84ed73a8781",
+  "generated_at": "2025-11-12T08:35:09.083540Z",
+  "doc_type": "dpia_json",
+  "filename": "dpia.json",
+  "run_id": "20251112T083338Z",
+  "encrypted": false,
+  "validation": {
+    "ok": false,
+    "errors": [
+      "\"ctx.sections.A.Governance.percent > 75 ? 'Personal data' : ''\" is not of type 'array'",
+      "'ctx.org.name' is not of type 'array'",
+      "'ctx.processors.length > 0 ? ctx.processors.map(p => p.name) : []' is not of type 'array'",
+      "'ctx.transfers.filter(t => t.flag !== null).map(t => t.mechanisms)' is not of type 'array'",
+      "'ctx.security_measures' is not of type 'array'"
+    ]
+  }
+}

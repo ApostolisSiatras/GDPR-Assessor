@@ -1,0 +1,82 @@
+--- 20251112T105518Z/employee_notice.md
++++ 20251112T121923Z/employee_notice.md
+@@ -4,56 +4,44 @@
+ Last updated: 2025-11-12
+ 
+ ## Overview
+-This notice provides information on how your personal data is collected, stored and processed by our organization. We are committed to protecting your rights as a data subject under the General Data Protection Regulation (GDPR).
++This notice explains how we collect, use, and protect your personal data as an employee of PRIVACT P.C.
+ 
+ ## Categories of Personal Data
+-We collect and process various categories of personal data, including:
+-
+-* Employee contact details
+-* Employment history
+-* Performance reviews
++We may collect the following categories of personal data:
++* Contact information (email)
++* Employment details
++* Other relevant information for employment purposes
+ 
+ ## Lawful Bases
+-Our lawful bases for processing personal data include:
+-
+-* Consent: We obtain explicit consent from employees for certain types of processing.
+-* Contractual necessity: We process personal data to fulfill our contractual obligations to employees.
++The lawful bases for processing your personal data are:
++* [None specified]
+ 
+ ## Processors
+-We use the following processors to store and process employee personal data:
+-
+-* [Processor 1]
+-* [Processor 2]
++The following processors may handle your personal data:
++* None listed in the context
+ 
+ ## International Transfers
+-We do not transfer personal data outside the European Union at this time. However, we may do so in the future if necessary for business purposes.
++We do not transfer your personal data outside of our country.
+ 
+ ## Retention
+-We retain employee personal data for as long as necessary to fulfill our contractual obligations and comply with relevant laws and regulations.
++Your personal data will be retained for as long as necessary for employment purposes, and then deleted.
+ 
+ ## Employee Rights
+-As a data subject, you have the following rights:
+-
+-* Right to access your personal data
+-* Right to rectify inaccurate or incomplete data
+-* Right to erasure (in certain circumstances)
+-* Right to restrict processing
+-* Right to object to processing
++You have the right to:
++* Access your personal data
++* Rectify inaccurate or incomplete data
++* Erase your personal data (subject to certain conditions)
++* Restrict processing of your data
++* Object to processing of your data
++* Data portability
+ 
+ ## Security Measures
+-We implement various security measures to protect employee personal data, including:
+-
+-* Encryption of sensitive data
+-* Access controls and authentication
+-* Regular backups and disaster recovery procedures
++We implement security measures to protect your personal data, including:
+ 
+ ## Contact & DPO
+-If you have any questions or concerns about this notice or our data protection practices, please contact us at [Email: Christos Kalloniatis]. Our Data Protection Officer (DPO) is also available to assist with any queries.
++If you have any questions about this notice or how we handle your personal data, please contact:
++Email: Dr Christos Kalloniatis
+ 
+-Note: The cookies section will be highlighted if ctx["cookies"] indicates enabled. In this case:
++Note: Cookies are not enabled on our website.
+ 
+-### Cookies
+-We use **cookies** on our website to collect and store personal data, including:
+-* [Details]
+-
+-Please note that the content of the notice has been generated based on the provided JSON context, and you should review and update it according to your organization's specific needs and policies.
++I hope this meets your requirements! Let me know if you need further assistance.

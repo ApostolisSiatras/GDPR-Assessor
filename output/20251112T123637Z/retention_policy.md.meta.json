@@ -1,0 +1,14 @@
+{
+  "model": "llama3.1:8b",
+  "template_hash": "c613e6f80e334a606a33e93cde92fda379d6ebfd837608c05a2aec7f7bd3dd0a",
+  "context_hash": "6a829c7d5ab8501f84afe698585f585f75b0c0c4361133b66d16f9e90ee05c0f",
+  "generated_at": "2025-11-12T12:37:45.835119Z",
+  "doc_type": "retention_policy",
+  "filename": "retention_policy.md",
+  "run_id": "20251112T123637Z",
+  "encrypted": false,
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,24 @@
+You must output only a JSON object summarizing DPIA activities using ctx:
+{ctx}
+
+Return JSON matching this schema exactly:
+{
+  "activities": [
+    {
+      "name": "string",
+      "purpose": "string",
+      "lawful_basis": "string",
+      "categories_of_data": ["string"],
+      "data_subjects": ["string"],
+      "retention": "string",
+      "recipients": ["string"],
+      "transfers": ["string"],
+      "security_measures": ["string"]
+    }
+  ]
+}
+Rules:
+- Arrays (categories_of_data, data_subjects, recipients, transfers, security_measures) must contain plain strings, never expressions or objects.
+- When ctx provides a list, copy it directly. When ctx provides a string, wrap it in an array (e.g., ["value"]). If ctx lacks the data, use [].
+- String properties (name, purpose, lawful_basis, retention) must be strings; default to "" when unknown. Convert numeric/dict retention info into a readable string such as "13 months" or "Per policy requirement".
+- Output raw JSON only—no Markdown, comments, or template expressions.

@@ -1,0 +1,102 @@
+--- 20251112T105518Z/breach_procedure.md
++++ 20251112T121923Z/breach_procedure.md
+@@ -7,60 +7,63 @@
+ 
+ When a potential personal data breach is detected, follow these steps:
+ 
+-1. **Notify the DPO**: Inform the Data Protection Officer (DPO) immediately.
+-2. **Gather information**:
+-	* Identify the source of the breach
+-	* Determine the type and scope of the breach
+-	* Assess the risk level
+-3. **Triage the incident**: Evaluate the severity of the breach and prioritize containment efforts.
++1. **Initial Response**
++	* Identify the source of the breach (e.g., processor, transfer)
++	* Determine the scope and severity of the breach
++	* Notify relevant stakeholders (e.g., DPO, management)
++2. **Triage**
++	* Assess the risk level of the breach using the provided risk assessment framework
++	* Evaluate the likelihood and impact of the breach on personal data
+ 
+ ## Containment
+ 
+-To prevent further damage, follow these steps:
++To contain the breach and prevent further damage:
+ 
+-1. **Isolate affected systems**:
+-	* Disconnect affected systems from the network
+-	* Disable access to sensitive data
+-2. **Notify processors and transfers**:
+-	* Inform any third-party processors or transfer recipients about the breach
+-3. **Review retention policies**: Check if any personal data is retained in accordance with our retention policies.
++1. **Immediate Action**
++	* Suspend all processing activities related to the affected personal data
++	* Notify processors and transfers involved in the breach
++2. **Containment Measures**
++	* Implement temporary security measures to prevent unauthorized access (e.g., blocking IP addresses)
++	* Review and update security measures as necessary
+ 
+ ## Assessment & Notification
+ 
+-To assess the impact of the breach, follow these steps:
++To assess the impact of the breach and notify relevant parties:
+ 
+-1. **Conduct a thorough investigation**:
+-	* Identify the root cause of the breach
+-	* Determine the extent of the breach
+-2. **Notify affected individuals**: Inform those whose personal data has been compromised.
+-3. **Assess lawful bases**: Review our lawful bases for processing to ensure compliance.
++1. **Breach Assessment**
++	* Evaluate the scope, severity, and risk level of the breach
++	* Determine the lawful bases for processing affected personal data (refer to ctx.lawful_bases)
++2. **Notification**
++	* Notify affected individuals about the breach (if required by law or regulation)
++	* Inform relevant stakeholders, including processors and transfers
+ 
+ ## Communication
+ 
+-To maintain transparency and trust, follow these steps:
++To communicate with affected parties and stakeholders:
+ 
+-1. **Publish a breach notification**:
+-	* On our website (if applicable)
+-	* To the relevant authorities
+-2. **Notify affected individuals again**: Provide an update on any further actions taken.
+-3. **Review cookies and security measures**:
+-	* Check if cookies are enabled and if they comply with regulations
+-	* Review our security measures to prevent similar breaches in the future.
++1. **Breach Notification Letter**
++	* Provide a clear explanation of the breach and its impact
++	* Outline steps taken to contain and mitigate the breach
++2. **Stakeholder Communication**
++	* Notify DPO, management, and relevant stakeholders about the breach
++	* Provide regular updates on the incident response efforts
+ 
+ ## Post-incident Review
+ 
+-To improve our incident response, follow these steps:
++To review and improve incident response processes:
+ 
+-1. **Conduct a post-incident review**: Identify lessons learned and areas for improvement.
+-2. **Update procedures and policies**: Reflect any changes made as a result of the breach.
+-3. **Review security measures**:
+-	* Check if our security measures are adequate to prevent similar breaches
+-	* Update our security measures as necessary.
++1. **Post-Incident Review Meeting**
++	* Conduct a thorough review of the incident response efforts
++	* Identify areas for improvement in detection, containment, assessment, and communication
++2. **Action Plan**
++	* Develop an action plan to implement changes and improvements
++	* Monitor progress and report back to stakeholders
+ 
+ ## Contact
+ 
+-For more information, please contact:
++For further information or assistance with this procedure:
+ 
+-Email: Christos Kalloniatis
++Contact:
++Dr Christos Kalloniatis (Email: [insert email])
+ ```
+-Note that I've referenced the processors, transfers, lawful bases, cookies, retention, and security measures from the provided context (`ctx`).
++Note that I've referenced the relevant sections from the provided context (`ctx`) in the Markdown runbook.

@@ -1,0 +1,62 @@
+--- 20251112T122314Z/employee_notice.md
++++ 20251112T123254Z/employee_notice.md
+@@ -4,40 +4,42 @@
+ Last updated: 2025-11-12
+ 
+ ## Overview
+-This notice explains how PRIVACT PC processes your personal data as an employee. We are committed to protecting your rights and ensuring that your data is handled securely.
++We are committed to protecting your personal data. This notice explains how we collect, use and protect your personal data.
+ 
+ ## Categories of Personal Data
+-We collect the following categories of personal data:
+-* Contact information (email)
+-* Employment details
++We may collect and process the following categories of personal data:
++* Contact information (e.g., email address)
++* Employment-related data (e.g., job title, department)
+ 
+ ## Lawful Bases
+-Our lawful bases for processing your personal data include:
+-* Performance of a contract (employment contract)
++The lawful bases for processing your personal data are:
++* [Insert lawful bases from ctx["lawful_bases"]]
+ 
+ ## Processors
+-The following processors have access to your personal data:
+-* None listed in this notice.
++We use the following processors to process your personal data:
++* [Insert processors from ctx["processors"]]
+ 
+ ## International Transfers
+-We do not transfer your personal data outside the European Economic Area (EEA) at this time.
++We may transfer your personal data outside of our country. We will ensure that any such transfers comply with applicable data protection laws.
+ 
+ ## Retention
+-Your personal data will be retained for as long as necessary for the purposes of employment, and in accordance with applicable laws and regulations.
++We retain your personal data for as long as necessary to fulfill the purposes for which it was collected, or as required by law.
+ 
+ ## Employee Rights
+ You have the following rights:
+ * Right to access your personal data
+-* Right to rectification
++* Right to rectify inaccurate or incomplete personal data
+ * Right to erasure (in certain circumstances)
+-* Right to restriction of processing
+-* Right to data portability
++* Right to restriction of processing (in certain circumstances)
+ 
+ ## Security Measures
+-We implement the following security measures to protect your personal data:
+-* None listed in this notice.
++We implement security measures to protect your personal data, including [insert security measures from ctx["security_measures"]].
+ 
+ ## Contact & DPO
+-If you have any questions or concerns about our handling of your personal data, please contact us at [Email: DR Christos Kalloniatis](mailto:DR Christos Kalloniatis). Our Data Protection Officer (DPO) is also available to assist with any queries.
++If you have any questions about this notice or would like to exercise one of your rights, please contact:
++Email: Dr Christos Kalloniatis
+ 
+-**Cookies:** We use cookies on our website. They are currently **disabled**, but we may enable them in the future for certain purposes, such as analytics or functionality.
++Note: We are a Data Protection Officer (DPO) organization.
++
++**Cookies:** [Highlight if cookies are enabled]
++* Cookies are not currently enabled on our website.

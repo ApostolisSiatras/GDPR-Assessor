@@ -1,0 +1,70 @@
+--- 20251112T122314Z/retention_policy.md
++++ 20251112T123254Z/retention_policy.md
+@@ -2,39 +2,47 @@
+ Last updated: 2025-11-12
+ 
+ ## Scope
+-This data retention policy applies to all personal data processed by PRIVACT PC.
++This data retention policy applies to all personal data processed by PRIVACT.
+ 
+ ## Retention Schedule
+ The following data categories will be retained for the specified duration:
+ 
+-* **Account information**: 5 years (as per ctx["retention"]["account"])
+-* **Communication records**: 2 years (as per ctx["retention"]["communication"])
+-* **Financial transactions**: 7 years (as per ctx["retention"]["financial"])
+-* **Marketing data**: 1 year (as per ctx["retention"]["marketing"])
++* **Customer Information**: 5 years (retention period)
++	+ Customer contact details
++	+ Order history
++* **Transaction Data**: 3 years (retention period)
++	+ Payment information
++	+ Transaction records
++* **Marketing Data**: 2 years (retention period)
++	+ Marketing campaign data
++	+ Lead generation data
+ 
+ ## Lawful Bases & Justification
+-The lawful bases for processing personal data are:
++PRIVACT relies on the following lawful bases for processing personal data:
+ 
+-* Consent: obtained from individuals through explicit opt-in
+-* Legitimate interests: processing is necessary for the legitimate interests of PRIVACT PC, such as improving services and security
++* Consent: Customers provide explicit consent for processing their personal data.
++* Contractual Necessity: Processing is necessary to fulfill contractual obligations.
+ 
+-Justification for retention periods:
+-Retention periods are based on legal requirements, industry standards, and business needs.
++Justification:
++The retention of personal data is necessary to ensure compliance with regulatory requirements and to maintain business operations.
+ 
+ ## Storage & Security
+-Personal data will be stored in a secure manner, using encryption and access controls. Data will be processed by authorized personnel only.
++Personal data will be stored on secure servers located in [insert location]. Access to the servers will be restricted to authorized personnel only. Data protection measures include:
++
++* Encryption: All personal data will be encrypted using industry-standard encryption protocols.
++* Secure Protocols: Only secure communication protocols (HTTPS) will be used for transmitting and receiving personal data.
+ 
+ ## Deletion & Destruction
+-Data will be deleted or destroyed when it is no longer necessary for the purposes for which it was collected. This includes:
+-
+-* **Account information**: deleted after 5 years (as per ctx["retention"]["account"])
+-* **Communication records**: deleted after 2 years (as per ctx["retention"]["communication"])
+-* **Financial transactions**: deleted after 7 years (as per ctx["retention"]["financial"])
++Personal data will be deleted or destroyed in accordance with the retention schedule outlined above. When deletion is not possible, data will be anonymized to prevent identification.
+ 
+ ## Roles & Contact
+-The following roles are responsible for data retention:
++The following roles are responsible for ensuring compliance with this data retention policy:
+ 
+-* Data Protection Officer: DR Christos Kalloniatis (Email: [DR Christos Kalloniatis](mailto:DR Christos Kalloniatis))
+-* Data Processor: PRIVACT PC
++* Data Protection Officer (DPO): Dr Christos Kalloniatis
++* Contact: Email: [Dr Christos Kalloniatis](mailto:dr.christos.kalloniatis@privact.com)
+ 
+-Individuals have the right to erasure and objection, as per GDPR Article 17 and 21. If you wish to exercise these rights, please contact us at [DR Christos Kalloniatis](mailto:DR Christos Kalloniatis).
++**Rights of Erasure and Objections**
++Customers have the right to erasure and objection to processing their personal data. Requests should be submitted in writing to the DPO.
++
++Note:
++Cookies are disabled on our website due to lack of website functionality.

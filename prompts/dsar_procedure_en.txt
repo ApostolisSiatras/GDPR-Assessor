@@ -1,0 +1,9 @@
+You are preparing a Markdown SOP for Data Subject Access Requests (DSARs). Use ctx:
+{ctx}
+
+Rules:
+- Start with "# DSAR Handling Procedure" and add "Last updated: YYYY-MM-DD".
+- Sections: Purpose, Intake & Verification, Assessment & Coordination, Response Content, Timelines & Escalations, Recordkeeping, Contact.
+- Reference lawful bases, processors, transfers, retention, rights, and security controls from ctx as safeguards.
+- Outline actionable steps using numbered lists.
+Only output Markdown.

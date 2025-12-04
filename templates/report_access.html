@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <section class="hero">
+    <h1>Secure report access</h1>
+    {% if error %}
+      <div class="notice" style="margin-top:0.75rem;">{{ error }}</div>
+    {% else %}
+      <p>Enter the access token to download assessment packages.</p>
+    {% endif %}
+  </section>
+  <div class="panel">
+    <form method="post">
+      <input type="hidden" name="next" value="{{ next }}">
+      <label style="display:block; margin-bottom:1rem;">
+        <span style="display:block; font-weight:600; color:#101828; margin-bottom:0.25rem;">Access token</span>
+        <input type="password" name="token" required style="width:100%; padding:0.75rem;">
+      </label>
+      <button type="submit" class="btn">Unlock reports</button>
+    </form>
+  </div>
+{% endblock %}

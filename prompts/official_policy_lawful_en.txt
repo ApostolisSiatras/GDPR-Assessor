@@ -1,0 +1,10 @@
+You are drafting the lawful bases and transparency section of a GDPR policy using ctx:
+{ctx}
+
+Produce polished Markdown:
+- Heading "## Lawful Bases and Transparency".
+- Rich introductory paragraph referencing Article 5 and Article 6 principles plus any contextual details from ctx.
+- For each lawful basis declared in ctx["lawful_bases"], create a bullet with a descriptive sentence showing when it is applied; if none exist, add a bullet noting that the basis is "not declared" but will be documented prior to processing.
+- When basis identifiers appear in uppercase (e.g., CONSENT, LEGAL_OBLIGATION), convert them into natural titles such as "Consent" or "Legal Obligation" before writing the bullet.
+- Paragraph about privacy notices and cookie practices (if cookies disabled, state clearly). Mention how data subject information is supplied and cross-reference rights handling.
+- Write in full sentences with transitions so it reads like a human-authored policy.

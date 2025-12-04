@@ -1,0 +1,230 @@
+{
+  "generated_at": "2025-11-12T08:18:19.458791Z",
+  "schema": "dpia(1.1)",
+  "sections": {
+    "A.Context": {
+      "earned": 1.2,
+      "max": 2.0,
+      "percent": 60.0
+    },
+    "B.Stakeholders": {
+      "earned": 1.5,
+      "max": 2.0,
+      "percent": 75.0
+    },
+    "B.Transfers": {
+      "earned": 1.0,
+      "max": 1.0,
+      "percent": 100.0
+    },
+    "C.Risk": {
+      "earned": 1.0,
+      "max": 4.0,
+      "percent": 25.0
+    },
+    "D.Security": {
+      "earned": 6.0,
+      "max": 7.0,
+      "percent": 85.7
+    },
+    "E.Rights": {
+      "earned": 1.0,
+      "max": 2.0,
+      "percent": 50.0
+    },
+    "F.Residual": {
+      "earned": 1.0,
+      "max": 1.0,
+      "percent": 100.0
+    }
+  },
+  "overall_score": {
+    "earned": 12.7,
+    "max": 19.0,
+    "percent": 66.8,
+    "rating": "Needs Improvement"
+  },
+  "coverage_gaps": [
+    {
+      "question": "Q-DPIA-002",
+      "section": "A.Context",
+      "text": "Select the purposes of the processing (choose all that apply).",
+      "required_targets": [
+        "ANALYTICS",
+        "COMPLIANCE_REPORTING",
+        "CUSTOMER_MANAGEMENT",
+        "HR_ADMINISTRATION",
+        "SECURITY_MONITORING",
+        "SERVICE_PROVISION"
+      ],
+      "selected": [
+        "PAYROLL"
+      ],
+      "mode": "ANY"
+    },
+    {
+      "question": "Q-DPIA-003",
+      "section": "A.Context",
+      "text": "Select personal data categories processed.",
+      "required_targets": [
+        "CONTACT",
+        "CUSTOMER_BEHAVIOR",
+        "FINANCIAL",
+        "IDENTITY",
+        "LOCATION",
+        "ONLINE_IDENTIFIER"
+      ],
+      "selected": [
+        "CONTACT",
+        "IDENTITY"
+      ],
+      "mode": "FRACTION"
+    },
+    {
+      "question": "Q-DPIA-025",
+      "section": "E.Rights",
+      "text": "Rights processes implemented (select).",
+      "required_targets": [
+        "ACCESS",
+        "ERASURE",
+        "OBJECTION",
+        "PORTABILITY",
+        "RECTIFICATION",
+        "RESTRICTION"
+      ],
+      "selected": [
+        "ACCESS",
+        "ERASURE",
+        "PORTABILITY",
+        "RECTIFICATION"
+      ],
+      "mode": "ALL"
+    }
+  ],
+  "high_risk_indicators": [
+    "Special-category data present (Art.9).",
+    "Automated decision-making/profiling reported (Art.22)."
+  ],
+  "gdpr_articles": {
+    "Art.4(1)": [
+      "Q-DPIA-001: YES",
+      "Q-DPIA-003: IDENTITY, CONTACT"
+    ],
+    "Art.5(1)(a)": [
+      "Q-DPIA-001A: CUSTOMERS"
+    ],
+    "Art.5(1)(b)": [
+      "Q-DPIA-002: PAYROLL",
+      "Q-DPIA-007: YES"
+    ],
+    "Art.9": [
+      "Q-DPIA-004: HEALTH"
+    ],
+    "Recital 91": [
+      "Q-DPIA-005: LOW_<=1000",
+      "Q-DPIA-014A: PROFILING, BEHAVIOR_TRACKING",
+      "Q-DPIA-016: NO"
+    ],
+    "Art.6": [
+      "Q-DPIA-006: CONSENT"
+    ],
+    "Art.5(1)(e)": [
+      "Q-DPIA-008: 1"
+    ],
+    "Art.4(7)-(8)": [
+      "Q-DPIA-009: CONTROLLER"
+    ],
+    "Art.26": [
+      "Q-DPIA-010: YES"
+    ],
+    "Art.44-49": [
+      "Q-DPIA-011: YES"
+    ],
+    "Art.46": [
+      "Q-DPIA-012: ADEQUACY, SCC"
+    ],
+    "Art.28": [
+      "Q-DPIA-013: PARTIAL"
+    ],
+    "Art.22": [
+      "Q-DPIA-014: YES"
+    ],
+    "Recital 75": [
+      "Q-DPIA-015: NO",
+      "Q-DPIA-017: NO"
+    ],
+    "Art.32": [
+      "Q-DPIA-018: YES",
+      "Q-DPIA-021: YES"
+    ],
+    "Art.32(1)(a)": [
+      "Q-DPIA-019A: YES",
+      "Q-DPIA-019B: NO"
+    ],
+    "Art.32(1)(c)": [
+      "Q-DPIA-020: YES"
+    ],
+    "Art.30": [
+      "Q-DPIA-021: YES"
+    ],
+    "Art.39(1)(b)": [
+      "Q-DPIA-022: YES"
+    ],
+    "Art.33-34": [
+      "Q-DPIA-023: YES"
+    ],
+    "Art.13-14": [
+      "Q-DPIA-024: NO"
+    ],
+    "Art.15-22": [
+      "Q-DPIA-025: ACCESS, RECTIFICATION, ERASURE, PORTABILITY"
+    ],
+    "Art.7": [
+      "Q-DPIA-026: YES"
+    ],
+    "Art.21": [
+      "Q-DPIA-026: YES"
+    ],
+    "Recital 76": [
+      "Q-DPIA-027: VERY_LOW",
+      "Q-DPIA-028: LOW"
+    ],
+    "Art.35(7)(d)": [
+      "Q-DPIA-029: YES"
+    ]
+  },
+  "key_facts": {
+    "data_subjects": [
+      "CUSTOMERS"
+    ],
+    "purposes": [
+      "PAYROLL"
+    ],
+    "data_categories": [
+      "IDENTITY",
+      "CONTACT"
+    ],
+    "special_categories": [
+      "HEALTH"
+    ],
+    "legal_basis": [
+      "CONSENT"
+    ],
+    "processors": [
+      "CONTROLLER"
+    ],
+    "transfers": {
+      "flag": "YES",
+      "mechanisms": [
+        "ADEQUACY",
+        "SCC"
+      ]
+    },
+    "rights_processes": [
+      "ACCESS",
+      "RECTIFICATION",
+      "ERASURE",
+      "PORTABILITY"
+    ]
+  }
+}

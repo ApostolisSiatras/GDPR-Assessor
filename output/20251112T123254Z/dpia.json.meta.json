@@ -1,0 +1,14 @@
+{
+  "model": "llama3.1:8b",
+  "template_hash": "07eaf3d82ac4afd7f36c7f27a4217c47f10cb5e13711726f1ccd68171d52cfd3",
+  "context_hash": "7b871c3355d617244af78ed54c4a4f07eccade8738e2ae4a413acf9e0228b073",
+  "generated_at": "2025-11-12T12:35:02.426967Z",
+  "doc_type": "dpia_json",
+  "filename": "dpia.json",
+  "run_id": "20251112T123254Z",
+  "encrypted": false,
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

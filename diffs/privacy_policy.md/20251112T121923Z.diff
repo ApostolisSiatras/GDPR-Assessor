@@ -1,0 +1,71 @@
+--- 20251112T105518Z/privacy_policy.md
++++ 20251112T121923Z/privacy_policy.md
+@@ -2,49 +2,52 @@
+ Last updated: 2025-11-12
+ 
+ ## Overview
+-This privacy policy outlines our commitment to protecting your personal data. We take data protection seriously and strive to be transparent about how we collect, use, and share your information.
++This privacy policy outlines our commitment to protecting your personal data and ensuring that we comply with all applicable data protection laws.
+ 
+ ## Lawful Bases
+ We rely on the following lawful bases for processing personal data:
+ * Not provided in assessment
+ 
+ ## Personal Data Categories
+-We process the following categories of personal data:
++We collect and process various categories of personal data, including:
++
+ * Not specified
+ 
+ ## Processors
+-We engage with the following processors to assist us in our data processing activities:
++The following processors are used to handle personal data:
+ * None listed
+ 
+ ## International Transfers
+-We do not transfer personal data outside the European Economic Area (EEA) at this time. However, if we were to make such transfers in the future, we would rely on the following mechanisms:
++Personal data may be transferred outside the European Union. The mechanisms for these transfers are:
+ * Not provided in assessment
+ 
+ ## Cookies
+-Our website does not use cookies for tracking or profiling purposes.
++Cookies are not enabled on our website. However, we do collect information about cookies as follows:
+ * Enabled: false
+ * Reason: no_website
+ 
+ ## Retention
+-We retain personal data for as long as necessary to fulfill our business purposes. The exact retention periods are not specified.
++We retain personal data for the following periods:
++* No retention periods specified
+ 
+ ## Data Subject Rights
+-You have the following rights in relation to your personal data:
+-* Right to access and rectify your data
+-* Right to erasure (in certain circumstances)
+-* Right to restriction of processing
+-* Right to object to processing
+-* Right to data portability
++You have the right to:
++* Request access to your personal data
++* Request correction of any inaccuracies in your personal data
++* Request erasure of your personal data (in certain circumstances)
++* Object to processing of your personal data (in certain circumstances)
++* Restrict processing of your personal data (in certain circumstances)
+ 
+ ## Security Measures
+-We implement the following security measures to protect your personal data:
++We have implemented the following security measures:
+ * None listed
+ 
+ ## Risk Posture
+-Our risk posture is Strong, with a rating of 100.0% and an earned score of 25.0.
++Our risk posture is Strong, with a rating of 98.0% and a maximum possible score of 25.0.
+ 
+ ## Contact
+ If you have any questions or concerns about this privacy policy or how we handle your personal data, please contact us at:
+-Email: Christos Kalloniatis
+ 
+-Note: This privacy policy is based on the provided context JSON and may not be comprehensive or up-to-date. It is recommended to review and update the policy regularly to ensure compliance with applicable laws and regulations.
++Email: Dr Christos Kalloniatis
++
++We are committed to protecting your rights as a data subject and will respond promptly to any requests or inquiries you may have.

@@ -1,0 +1,71 @@
+--- 20251112T121923Z/cookie_policy.md
++++ 20251112T122314Z/cookie_policy.md
+@@ -1,4 +1,4 @@
+-Here's the Markdown text for the Cookie Policy based on the provided context:
++Here's the Cookie Policy in Markdown format based on the provided context:
+ 
+ # Cookie Policy
+ Last updated: 2025-11-12
+@@ -7,7 +7,10 @@
+ 
+ Cookies are currently **disabled** on our website. We do not collect any information through cookies.
+ 
+-## Cookies Used by Our Website
++We use cookies for the following purposes:
++* [Insert purpose here, if applicable]
++
++## Cookies Used by Category
+ 
+ | Category | Purpose |
+ | --- | --- |
+@@ -15,36 +18,37 @@
+ 
+ ## Retention of Cookies
+ 
+-| Type | Description |
++| Cookie Name | Retention Period |
+ | --- | --- |
+-| No retention period specified |
++| None listed |
+ 
+-## Lawful Bases for Cookie Usage
++## Lawful Bases for Using Cookies
+ 
+-| Basis | Description |
++| Lawful Basis | Description |
+ | --- | --- |
+-| No lawful bases specified |
++| None listed |
+ 
+ ## Processors Touching Cookies
+ 
+-| Processor | Description |
++| Processor | Purpose |
+ | --- | --- |
+ | None listed |
+ 
+ ## Managing Cookies
+ 
+-We do not use cookies on our website. However, if you have any concerns about cookies or would like to manage your cookie preferences, please contact us at [Dr Christos Kalloniatis](mailto:Email: Dr Christos Kalloniatis).
++If you wish to manage your cookie settings, please refer to our [Privacy Policy](link to Privacy Policy).
+ 
+-## Transfers of Cookie Data
++## Transfers of Personal Data
+ 
+-| Transfer | Description |
+-| --- | --- |
+-| No transfers specified |
++We do not transfer any personal data outside the European Union.
+ 
+ ## Security Measures
+ 
+-We do not have any security measures in place to protect cookie data.
++We have implemented the following security measures to protect your personal data:
++* None listed
+ 
+ ## Contact
+ 
+-If you have any questions or concerns about our cookie policy, please contact us at [Dr Christos Kalloniatis](mailto:Email: Dr Christos Kalloniatis).
++If you have any questions or concerns about our cookie policy, please contact us at:
++
++Email: DR Christos Kalloniatis

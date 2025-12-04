@@ -1,0 +1,63 @@
+{
+  "Q-DPIA-001": true,
+  "Q-DPIA-001A": [
+    "PROSPECTS"
+  ],
+  "Q-DPIA-002": [
+    "ADVERTISING",
+    "SECURITY_MONITORING"
+  ],
+  "Q-DPIA-003": [
+    "LOCATION",
+    "EMPLOYMENT"
+  ],
+  "Q-DPIA-004": [
+    "TRADE_UNION",
+    "SEXUAL_ORIENTATION"
+  ],
+  "Q-DPIA-005": "LOW_<=1000",
+  "Q-DPIA-006": [
+    "CONSENT"
+  ],
+  "Q-DPIA-007": "YES",
+  "Q-DPIA-008": 1,
+  "Q-DPIA-009": [
+    "CONTROLLER"
+  ],
+  "Q-DPIA-010": "YES",
+  "Q-DPIA-011": "YES",
+  "Q-DPIA-012": [
+    "ADEQUACY",
+    "BCR"
+  ],
+  "Q-DPIA-013": "PARTIAL",
+  "Q-DPIA-014": "NO",
+  "Q-DPIA-014A": [
+    "BEHAVIOR_TRACKING"
+  ],
+  "Q-DPIA-015": "NO",
+  "Q-DPIA-016": "NO",
+  "Q-DPIA-017": "NO",
+  "Q-DPIA-018": "NO",
+  "Q-DPIA-019A": "NO",
+  "Q-DPIA-019B": "NO",
+  "Q-DPIA-020": "YES",
+  "Q-DPIA-021": "YES",
+  "Q-DPIA-022": "NO",
+  "Q-DPIA-023": "NO",
+  "Q-DPIA-024": "YES",
+  "Q-DPIA-025": [
+    "PORTABILITY",
+    "OBJECTION"
+  ],
+  "Q-DPIA-026": "NO",
+  "Q-DPIA-027": "VERY_LOW",
+  "Q-DPIA-028": "VERY_LOW",
+  "Q-DPIA-029": "YES",
+  "Q-DPIA-030": "PARTIAL",
+  "Q-DPIA-031": "PARTIAL",
+  "Q-DPIA-032": "PARTIAL",
+  "Q-DPIA-033": "PARTIAL",
+  "Q-DPIA-034": "NO",
+  "Q-DPIA-035": "PARTIAL"
+}

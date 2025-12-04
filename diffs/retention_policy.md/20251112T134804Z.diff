@@ -1,0 +1,69 @@
+--- 20251112T123637Z/retention_policy.md
++++ 20251112T134804Z/retention_policy.md
+@@ -2,44 +2,41 @@
+ Last updated: 2025-11-12
+ 
+ ## Scope
+-This data retention policy applies to all personal data processed by Redacted Organisation.
++This data retention policy applies to all personal data processed by DOTSOFT.
+ 
+ ## Retention Schedule
+-The following categories of personal data will be retained for a period of **1 month**:
++The following data categories will be retained for the specified duration:
+ 
+-* Cookies: Not enabled, but if enabled in the future, will be retained for 1 month.
+-* User interactions and behavior data (not specified in ctx)
+-* Other data categories not explicitly mentioned in ctx
++* **Customer information**: 5 years (as per ctx["retention"]["customer"])
++* **Transaction records**: 3 years (as per ctx["retention"]["transaction"])
++* **Marketing data**: 1 year (as per ctx["retention"]["marketing"])
+ 
+ ## Lawful Bases & Justification
+-The following lawful bases have been declared:
++The lawful bases for processing personal data are:
+ 
+-* Consent
+-* Contract
+-* Legal Obligation
++* Consent: Customers have given explicit consent to process their data.
++* Legitimate interests: Processing is necessary for the legitimate interests of DOTSOFT, such as improving services and communicating with customers.
+ 
+-Data is processed on the basis of these lawful bases, as per the organisation's legitimate interests.
++Justification:
++Data will be retained in accordance with applicable laws and regulations. The retention schedule above reflects the minimum period required to achieve the purposes for which the data was collected.
+ 
+ ## Storage & Security
+-Personal data will be stored securely using industry-standard measures. The organisation has appointed no Data Protection Officer (DPO) and has not specified an establishment country.
++Personal data will be stored on secure servers located within the European Economic Area (EEA). Access to data is restricted to authorized personnel only, and all data is encrypted in transit and at rest.
+ 
+ ## Deletion & Destruction
+-After the retention period, personal data will be deleted or destroyed in accordance with the organisation's data protection policies.
++Data will be deleted or destroyed when it is no longer necessary for the purposes for which it was collected. The following procedures will be followed:
++
++* **Customer information**: Data will be deleted 5 years after the customer's last interaction with DOTSOFT.
++* **Transaction records**: Data will be deleted 3 years after the transaction date.
++* **Marketing data**: Data will be deleted 1 year after the marketing campaign ends.
+ 
+ ## Roles & Contact
+-The following roles are responsible for data protection:
++The following roles are responsible for ensuring compliance with this policy:
+ 
+-* Data protection contact: available upon request.
+-* DPO: Not appointed
++* Data Protection Officer (DPO): NO
++* Contact: Email: DOTSOFT
+ 
+-Personal data subjects have the right to erasure and objection. If you wish to exercise these rights, please contact us at [insert contact details].
++Rights of individuals:
++Customers have the right to erasure and objection. Requests should be sent to the contact email address above.
+ 
+-Note: The organisation has not specified a website or sector, which may impact its ability to provide certain information or services.
+-
+-Transfers of personal data are made in accordance with the following mechanisms:
+-
+-* Adequacy
+-* Standard Contractual Clauses (SCC)
+-* Binding Corporate Rules (BCR)
+-
+-Cookies are not enabled on this website. If cookies were enabled, they would be subject to the same retention period as other personal data.
++Note: This policy does not apply to cookies, as they are disabled on our website due to lack of website presence.

@@ -1,0 +1,23 @@
+You must output only a JSON object describing the Record of Processing Activities (RoPA). Context ctx:
+{ctx}
+
+Return JSON matching this schema exactly:
+{
+  "activities": [
+    {
+      "name": "string",
+      "purpose": "string",
+      "lawful_basis": "string",
+      "categories_of_data": ["string"],
+      "data_subjects": ["string"],
+      "retention": "string",
+      "recipients": ["string"],
+      "transfers": ["string"],
+      "security_measures": ["string"]
+    }
+  ]
+}
+Rules:
+- Arrays must contain plain strings (no nested JSON, no expressions). If ctx supplies a list, reuse it; if ctx supplies a string, wrap it in ["string"]; otherwise return [].
+- String fields use "" when data is missing. For "name" and "purpose" fall back to short phrases such as "RoPA Entry" or "Processing purpose not declared" if ctx lacks details. For "retention" convert numbers or dicts into a readable string (e.g., "13 months", "Per legal requirement").
+- Never include template expressions (no "ctx..."), markdown, or comments—return raw JSON only.

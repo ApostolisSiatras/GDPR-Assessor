@@ -1,0 +1,76 @@
+{
+  "Q-DPIA-001": true,
+  "Q-DPIA-001A": [
+    "CUSTOMERS",
+    "EMPLOYEES",
+    "CONTRACTORS",
+    "USERS",
+    "PROSPECTS"
+  ],
+  "Q-DPIA-002": [
+    "HR_ADMINISTRATION",
+    "CUSTOMER_MANAGEMENT",
+    "SERVICE_PROVISION",
+    "FRAUD_PREVENTION",
+    "SECURITY_MONITORING",
+    "RESEARCH_AND_DEVELOPMENT",
+    "IT_OPERATIONS"
+  ],
+  "Q-DPIA-003": [
+    "IDENTITY",
+    "CONTACT",
+    "FINANCIAL",
+    "LOCATION",
+    "ONLINE_IDENTIFIER",
+    "EDUCATION",
+    "CUSTOMER_BEHAVIOR"
+  ],
+  "Q-DPIA-004": [
+    "POLITICAL",
+    "RELIGIOUS"
+  ],
+  "Q-DPIA-005": "LOW_<=1000",
+  "Q-DPIA-006": [
+    "CONSENT",
+    "CONTRACT",
+    "LEGAL_OBLIGATION"
+  ],
+  "Q-DPIA-007": "YES",
+  "Q-DPIA-008": 12,
+  "Q-DPIA-009": [
+    "CONTROLLER"
+  ],
+  "Q-DPIA-010": "YES",
+  "Q-DPIA-011": "NO",
+  "Q-DPIA-012": [
+    "SCC",
+    "BCR"
+  ],
+  "Q-DPIA-013": "YES",
+  "Q-DPIA-014": "YES",
+  "Q-DPIA-014A": [
+    "BEHAVIOR_TRACKING"
+  ],
+  "Q-DPIA-015": "YES",
+  "Q-DPIA-016": "NO",
+  "Q-DPIA-017": "NO",
+  "Q-DPIA-018": "YES",
+  "Q-DPIA-019A": "PARTIAL",
+  "Q-DPIA-019B": "PARTIAL",
+  "Q-DPIA-020": "YES",
+  "Q-DPIA-021": "PARTIAL",
+  "Q-DPIA-022": "YES",
+  "Q-DPIA-023": "YES",
+  "Q-DPIA-024": "YES",
+  "Q-DPIA-025": [
+    "ACCESS",
+    "RECTIFICATION",
+    "ERASURE",
+    "PORTABILITY",
+    "RESTRICTION"
+  ],
+  "Q-DPIA-026": "YES",
+  "Q-DPIA-027": "HIGH",
+  "Q-DPIA-028": "MEDIUM",
+  "Q-DPIA-029": "YES"
+}

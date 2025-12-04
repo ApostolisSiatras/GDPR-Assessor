@@ -1,0 +1,14 @@
+{
+  "model": "llama3.1:8b",
+  "template_hash": "46c53d4fe981a1e7573ba0ba0f95085db7b3776a9a3e74facc3e8b957913fab2",
+  "context_hash": "bf87fa71c25c52071840e4e3e434449a04e5dcdc9de2ab88dabf9d7cbf4a9f7c",
+  "generated_at": "2025-11-12T09:40:20.438444Z",
+  "doc_type": "cookie_policy",
+  "filename": "cookie_policy.md",
+  "run_id": "20251112T093946Z",
+  "encrypted": false,
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

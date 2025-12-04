@@ -1,0 +1,116 @@
+--- 20251112T123254Z/breach_procedure.md
++++ 20251112T123637Z/breach_procedure.md
+@@ -1,64 +1,70 @@
++Here is the Markdown incident response runbook for personal data breaches:
++```markdown
+ # Personal Data Breach Procedure
+ Last updated: 2025-11-12
+ 
+ ## Detection & Triage
+ 
+-When a personal data breach is suspected or detected:
+-
+-1. **Notify the DPO**: Inform Dr Christos Kalloniatis, the Data Protection Officer (DPO), immediately.
+-2. **Gather information**:
+-	* Identify the source of the breach
+-	* Determine the type and scope of the breach
+-	* Assess the potential impact on individuals
+-3. **Activate incident response team**: Assemble a team to investigate and respond to the breach, including IT, security, and compliance personnel.
+-4. **Document the incident**: Record all relevant details, including the date, time, and description of the breach.
++1. **Initial Response**
++	* Identify potential breach through monitoring and detection tools
++	* Verify breach using contextual information (e.g., processor logs, transfer records)
++2. **Triage Checklist**
++	* Has a personal data breach occurred?
++		+ Yes: Proceed to Containment section
++		+ No: Continue monitoring and re-evaluate
++3. **Notify Relevant Parties**
++	* Inform Data Protection Officer (DPO) or designated contact
++	* Notify relevant stakeholders, including processors and transfer recipients
+ 
+ ## Containment
+ 
+-To prevent further unauthorized access or data exfiltration:
+-
+-1. **Isolate affected systems**:
+-	* Disconnect affected devices from the network
+-	* Disable accounts and credentials associated with the breach
+-2. **Secure sensitive data**:
+-	* Restrict access to sensitive data and systems
+-	* Implement temporary measures to protect against further breaches (e.g., encryption, firewalls)
+-3. **Notify processors and transfers**: Inform any third-party processors or transfer recipients about the breach.
++1. **Immediate Action**
++	* Disable access to affected systems and data
++	* Isolate affected networks and devices
++2. **Containment Checklist**
++	* Have cookies been enabled on the website?
++		+ Yes: Disable cookies immediately
++		+ No: Proceed to Assessment & Notification section
++3. **Notify Affected Parties**
++	* Inform processors, transfer recipients, and other relevant parties
+ 
+ ## Assessment & Notification
+ 
+-To assess the impact of the breach and notify affected parties:
+-
+-1. **Conduct a thorough investigation**:
+-	* Determine the root cause of the breach
+-	* Assess the scope and severity of the breach
+-2. **Notify affected individuals**: Inform individuals whose personal data has been compromised, in accordance with applicable laws (e.g., GDPR Article 34).
+-3. **Notify regulatory authorities**: Report the breach to relevant regulatory bodies, such as the ICO.
+-4. **Assess lawful bases**: Review the lawful bases for processing personal data and determine if any need to be updated or revised.
++1. **Assessment Checklist**
++	* What type of personal data was breached? (e.g., sensitive, non-sensitive)
++	* How many individuals were affected?
++	* Was the breach caused by a processor or transfer recipient?
++2. **Notification Requirements**
++	* Notify affected individuals within [Retention] months
++	* Provide information on the breach, including:
++		+ Type of data breached
++		+ Number of individuals affected
++		+ Measures taken to prevent future breaches
+ 
+ ## Communication
+ 
+-To maintain transparency and inform stakeholders:
+-
+-1. **Internal communication**:
+-	* Inform employees about the breach and its impact
+-	* Provide guidance on how to respond to affected individuals
+-2. **External communication**:
+-	* Publish a public notice about the breach (if required by law)
+-	* Respond to media inquiries and public concerns
++1. **Internal Communication**
++	* Inform all relevant stakeholders, including employees and management
++	* Provide regular updates on the incident response process
++2. **External Communication**
++	* Notify affected individuals through email or postal mail
++	* Publish a public notice on the website (if applicable)
+ 
+ ## Post-incident Review
+ 
+-To identify lessons learned and improve incident response:
+-
+-1. **Conduct a thorough review**: Analyze the breach, including its causes, impact, and response.
+-2. **Identify areas for improvement**:
+-	* Update policies and procedures
+-	* Implement additional security measures (e.g., encryption, access controls)
+-3. **Document lessons learned**: Record findings and recommendations to improve incident response.
++1. **Review Checklist**
++	* What caused the breach?
++	* Were security measures in place to prevent the breach?
++	* How can future breaches be prevented?
++2. **Action Plan**
++	* Develop an action plan to implement changes and improvements
++	* Schedule regular reviews to ensure compliance with regulations
+ 
+ ## Contact
+ 
+-For more information or to report a suspected breach:
++* Data Protection Officer (DPO): [Insert contact information]
++* Designated contact: [Insert contact information]
+ 
+-Email: Dr Christos Kalloniatis, Data Protection Officer (DPO) at [insert email address].
++Note:
++* This procedure is based on the provided context and may require additional steps or modifications depending on specific organizational needs.
++* Regular reviews and updates are essential to ensure this procedure remains effective and compliant with regulations.

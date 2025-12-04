@@ -1,0 +1,25 @@
+{
+  "activities": [
+    {
+      "categories_of_data": [
+        "Personal data"
+      ],
+      "data_subjects": [
+        "Data subjects not specified"
+      ],
+      "lawful_basis": "Consent, Contract, Legal Obligation",
+      "name": "RoPA Entry",
+      "purpose": "Processing purpose not declared",
+      "recipients": [
+        "Controller",
+        "Joint Controller",
+        "Processor"
+      ],
+      "retention": "1 month(s)",
+      "security_measures": [],
+      "transfers": [
+        "Adequacy, SCC, BCR"
+      ]
+    }
+  ]
+}

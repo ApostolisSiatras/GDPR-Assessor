@@ -1,0 +1,270 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <a id="top"></a>
+  <section class="hero">
+    <div class="flex-between">
+      <div>
+        <a class="btn btn-secondary" href="{{ url_for('home') }}">Assessment overview</a>
+        <h1 style="margin-top:1rem;">{{ schema_meta.label }}</h1>
+        <p>{{ schema_meta.description }}</p>
+      </div>
+      <div>
+        <strong>Accessible modules</strong>
+        <div class="checkbox-grid" style="margin-top:0.6rem;">
+          {% for mode_name in progress.accessible %}
+            <label style="gap:0.5rem;">
+              <input type="checkbox" disabled {% if mode_name in progress.completed %}checked{% endif %} />
+              {{ schema_choices[mode_name].label }}
+              {% if mode_name == mode %}
+                <span class="tag">Current</span>
+              {% endif %}
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="notice">
+    Complete every mandatory prompt (GDPR references highlighted per question). Submitting saves this module; you can return to the assessment workspace to open other tracks when ready.
+  </div>
+  <div class="stat-card" style="margin:1rem 0; display:flex; align-items:center; justify-content:space-between; gap:1rem;">
+    <div>
+      <strong>Need instant demo answers?</strong>
+      <p class="text-muted" style="margin:0.2rem 0 0 0;">Auto-fill every field with a perfect or mediocre score and jump straight to the analytics.</p>
+      <div id="autofill-status" class="text-muted" style="font-size:0.9rem; margin-top:0.25rem;"></div>
+    </div>
+    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:flex-end;">
+      <button class="btn" type="button" data-autofill="perfect">Auto-fill perfect score</button>
+      <button class="btn btn-secondary" type="button" data-autofill="mediocre">Auto-fill mediocre score</button>
+    </div>
+  </div>
+  {% set counters = namespace(total=0, required=0) %}
+  {% for section, questions in sections %}
+    {% set counters.total = counters.total + (questions|length) %}
+    {% for q in questions %}
+      {% if q.required %}
+        {% set counters.required = counters.required + 1 %}
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+  <div class="stat-grid">
+    <div class="stat-card">
+      <span>Sections</span>
+      <strong>{{ sections|length }}</strong>
+    </div>
+    <div class="stat-card">
+      <span>Total questions</span>
+      <strong>{{ counters.total }}</strong>
+    </div>
+    <div class="stat-card">
+      <span>Required</span>
+      <strong>{{ counters.required }}</strong>
+    </div>
+  </div>
+  <div class="section-nav assessment-nav">
+    {% for section, questions in sections %}
+      <button type="button" data-target="section-{{ loop.index }}">
+        {{ section }}
+        <span style="font-size:0.8rem; color:var(--muted);">{{ questions|length }} items</span>
+      </button>
+    {% endfor %}
+  </div>
+  <form method="post">
+    {% for section, questions in sections %}
+      <section id="section-{{ loop.index }}" class="assessment-section" style="margin-bottom:2rem;">
+        <h3 class="section-title" style="display:flex; justify-content:space-between; align-items:center; gap:1rem;">
+          <span>{{ loop.index }}. {{ section }}</span>
+          <a class="btn-ghost" href="#top" style="text-decoration:none; font-size:0.85rem;">Back to top</a>
+        </h3>
+      {% for q in questions %}
+        <div class="question-card">
+          <div class="question-head">
+            <div class="question-id">{{ q.id }}</div>
+            <span class="tag" style="background-color:{% if q.required %}#2563eb{% else %}#f2f4f7{% endif %}; color:{% if q.required %}#fff{% else %}#475467{% endif %};">
+              {% if q.required %}Required{% else %}Optional{% endif %}
+            </span>
+          </div>
+          {% set field_id = field_name(q) %}
+          {% set enum_opts = q.enum or [] %}
+          {% set lower_opts = enum_opts | map('lower') | list %}
+          {% set radio_keywords = ['yes','no','partial','partially','n/a','not applicable'] %}
+          {% set keyword_match = namespace(count=0) %}
+          {% for val in lower_opts %}
+            {% if val in radio_keywords %}
+              {% set keyword_match.count = keyword_match.count + 1 %}
+            {% endif %}
+          {% endfor %}
+          {% set use_keyword_radio = (q.qtype in ['enum','scale']) and enum_opts and (enum_opts|length <= 4) and (keyword_match.count == enum_opts|length) %}
+          <div class="question-body">
+            <div class="question-copy">
+              <h4>{{ q.text }}</h4>
+              {% set ref_links = gdpr_links(q.gdpr_refs) %}
+              {% if ref_links %}
+                <span class="gdpr-ref">
+                  GDPR:
+                  {% for ref in ref_links %}
+                    <a href="{{ ref.href }}" target="_blank" rel="noopener noreferrer">{{ ref.label }}</a>{% if not loop.last %}, {% endif %}
+                  {% endfor %}
+                </span>
+              {% endif %}
+              {% if q.coverage_policy %}
+                <span class="gdpr-ref">Coverage {{ q.coverage_policy.mode }} → {{ q.coverage_policy.targets | join(', ') }}</span>
+              {% endif %}
+            </div>
+            <div class="question-input">
+            {% if q.qtype == "boolean" %}
+              <div class="radio-group">
+                {% for option in [{'label': 'Yes', 'value': 'true'}, {'label': 'No', 'value': 'false'}] %}
+                  {% set opt_id = field_id ~ '_' ~ loop.index %}
+                  <label class="radio-pill" for="{{ opt_id }}">
+                    <input type="radio" name="{{ field_id }}" id="{{ opt_id }}" value="{{ option.value }}" {% if state.get(q.id) == option.value %}checked{% endif %} />
+                    {{ option.label }}
+                  </label>
+                {% endfor %}
+              </div>
+            {% elif use_keyword_radio %}
+              <div class="radio-group">
+                {% for opt in enum_opts %}
+                  {% set opt_id = field_id ~ '_' ~ loop.index %}
+                  <label class="radio-pill" for="{{ opt_id }}">
+                    <input type="radio" name="{{ field_id }}" id="{{ opt_id }}" value="{{ opt }}" {% if state.get(q.id) == opt %}checked{% endif %} />
+                    {{ opt }}
+                  </label>
+                {% endfor %}
+              </div>
+            {% elif q.qtype in ["enum", "scale"] %}
+              <select name="{{ field_id }}" id="{{ field_id }}">
+                <option value="">-- select --</option>
+                {% for opt in enum_opts %}
+                  <option value="{{ opt }}" {% if state.get(q.id) == opt %}selected{% endif %}>{{ opt }}</option>
+                {% endfor %}
+              </select>
+            {% elif q.qtype == "integer" %}
+              <input type="number" name="{{ field_id }}" id="{{ field_id }}" value="{{ state.get(q.id, '') }}" />
+            {% elif q.qtype == "multiselect" %}
+              <div class="checkbox-grid">
+                {% for opt in q.enum %}
+                  <label>
+                    <input type="checkbox" name="{{ field_id }}" value="{{ opt }}" {% if opt in state.get(q.id, []) %}checked{% endif %} />
+                    {{ opt }}
+                  </label>
+                {% endfor %}
+              </div>
+            {% else %}
+              <input type="text" name="{{ field_id }}" id="{{ field_id }}" value="{{ state.get(q.id, '') }}" />
+            {% endif %}
+            </div>
+          </div>
+          {% set existing_context = state.get('context_' ~ q.id, '') %}
+          <div class="question-notes question-context" data-context-for="{{ field_id }}" style="{% if state.get(q.id) or existing_context %}display:block;{% else %}display:none;{% endif %}">
+            <label for="context_{{ q.id }}" style="font-weight:500; color:#101828;">Implementation notes (optional)</label>
+            <textarea name="context_{{ q.id }}" id="context_{{ q.id }}" rows="3" placeholder="Add context once you choose an answer (e.g., processors involved, evidence references).">{{ existing_context }}</textarea>
+          </div>
+          {% if errors.get(q.id) %}
+            <div class="error">{{ errors[q.id] }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+      </section>
+    {% endfor %}
+    <button class="btn" type="submit" style="margin-top:1.5rem;">Submit {{ schema_meta.label }}</button>
+  </form>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+    (function() {
+      const sectionButtons = document.querySelectorAll('.assessment-nav button');
+      const sections = document.querySelectorAll('.assessment-section');
+      function setActive(targetId) {
+        sectionButtons.forEach((btn) => {
+          btn.classList.toggle('active', btn.dataset.target === targetId);
+        });
+      }
+      sectionButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const targetSection = document.getElementById(btn.dataset.target);
+          if (targetSection) {
+            targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setActive(btn.dataset.target);
+          }
+        });
+      });
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActive(entry.target.id);
+          }
+        });
+      }, { threshold: 0.3 });
+      sections.forEach((section) => observer.observe(section));
+      const contextBoxes = document.querySelectorAll('.question-context');
+      contextBoxes.forEach((box) => {
+        const target = box.dataset.contextFor;
+        if (!target) return;
+        const inputs = document.querySelectorAll(`[name="${target}"]`);
+        if (!inputs.length) return;
+        const toggleBox = () => {
+          let hasValue = false;
+          inputs.forEach((input) => {
+            if (input.type === 'radio' || input.type === 'checkbox') {
+              if (input.checked) {
+                hasValue = true;
+              }
+            } else if (input.value) {
+              hasValue = true;
+            }
+          });
+          box.style.display = hasValue ? 'block' : 'none';
+        };
+        inputs.forEach((input) => {
+          input.addEventListener('change', toggleBox);
+          input.addEventListener('input', toggleBox);
+        });
+        toggleBox();
+      });
+      const autofillButtons = document.querySelectorAll('[data-autofill]');
+      const autofillStatus = document.getElementById('autofill-status');
+      const setAutofillStatus = (text, isError) => {
+        if (!autofillStatus) return;
+        autofillStatus.textContent = text || '';
+        autofillStatus.style.color = isError ? '#b42318' : 'var(--muted)';
+      };
+      const autofillUrl = `${window.location.pathname.replace(/\/$/, '')}/autofill`;
+      autofillButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const variant = btn.dataset.autofill;
+          if (!variant) return;
+          setAutofillStatus(`Applying ${variant} answers...`, false);
+          autofillButtons.forEach((b) => { b.disabled = true; });
+          fetch(autofillUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ variant }),
+          })
+            .then(async (resp) => {
+              const data = await resp.json().catch(() => ({}));
+              if (!resp.ok) {
+                throw new Error(data.error || 'Unable to auto-fill right now.');
+              }
+              return data;
+            })
+            .then((data) => {
+              setAutofillStatus(`Loaded ${variant} scenario. Redirecting to results...`, false);
+              if (data.redirect) {
+                window.location.href = data.redirect;
+              }
+            })
+            .catch((err) => {
+              setAutofillStatus(err.message || 'Could not auto-fill answers.', true);
+            })
+            .finally(() => {
+              autofillButtons.forEach((b) => { b.disabled = false; });
+            });
+        });
+      });
+    })();
+  </script>
+{% endblock %}

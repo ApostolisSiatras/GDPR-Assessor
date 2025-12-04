@@ -1,0 +1,224 @@
+{
+  "generated_at": "2025-11-11T09:37:33.646005Z",
+  "schema": "dpia(1.1)",
+  "sections": {
+    "A.Context": {
+      "earned": 1.2,
+      "max": 2.0,
+      "percent": 60.0
+    },
+    "B.Stakeholders": {
+      "earned": 2.0,
+      "max": 2.0,
+      "percent": 100.0
+    },
+    "B.Transfers": {
+      "earned": 0.0,
+      "max": 1.0,
+      "percent": 0.0
+    },
+    "C.Risk": {
+      "earned": 2.0,
+      "max": 4.0,
+      "percent": 50.0
+    },
+    "D.Security": {
+      "earned": 5.5,
+      "max": 7.0,
+      "percent": 78.6
+    },
+    "E.Rights": {
+      "earned": 2.0,
+      "max": 2.0,
+      "percent": 100.0
+    },
+    "F.Residual": {
+      "earned": 1.0,
+      "max": 1.0,
+      "percent": 100.0
+    }
+  },
+  "coverage_gaps": [
+    {
+      "question": "Q-DPIA-014A",
+      "section": "C.Risk",
+      "text": "Select monitoring/profiling types (if applicable).",
+      "required_targets": [
+        "BIOMETRIC_IDENTIFICATION",
+        "PROFILING",
+        "SYSTEMATIC_OBSERVATION"
+      ],
+      "selected": [
+        "BEHAVIOR_TRACKING"
+      ],
+      "mode": "ANY"
+    },
+    {
+      "question": "Q-DPIA-025",
+      "section": "E.Rights",
+      "text": "Rights processes implemented (select).",
+      "required_targets": [
+        "ACCESS",
+        "ERASURE",
+        "OBJECTION",
+        "PORTABILITY",
+        "RECTIFICATION",
+        "RESTRICTION"
+      ],
+      "selected": [
+        "ACCESS",
+        "ERASURE",
+        "PORTABILITY",
+        "RECTIFICATION",
+        "RESTRICTION"
+      ],
+      "mode": "ALL"
+    }
+  ],
+  "high_risk_indicators": [
+    "Special-category data present (Art.9).",
+    "Automated decision-making/profiling reported (Art.22).",
+    "Residual risk remains high post-controls (Art.35(7)(d))."
+  ],
+  "gdpr_articles": {
+    "Art.4(1)": [
+      "Q-DPIA-001: YES",
+      "Q-DPIA-003: IDENTITY, CONTACT, FINANCIAL, LOCATION, ONLINE_IDENTIFIER, EDUCATION, CUSTOMER_BEHAVIOR"
+    ],
+    "Art.5(1)(a)": [
+      "Q-DPIA-001A: CUSTOMERS, EMPLOYEES, CONTRACTORS, USERS, PROSPECTS"
+    ],
+    "Art.5(1)(b)": [
+      "Q-DPIA-002: HR_ADMINISTRATION, CUSTOMER_MANAGEMENT, SERVICE_PROVISION, FRAUD_PREVENTION, SECURITY_MONITORING, RESEARCH_AND_DEVELOPMENT, IT_OPERATIONS",
+      "Q-DPIA-007: YES"
+    ],
+    "Art.9": [
+      "Q-DPIA-004: POLITICAL, RELIGIOUS"
+    ],
+    "Recital 91": [
+      "Q-DPIA-005: LOW_<=1000",
+      "Q-DPIA-014A: BEHAVIOR_TRACKING",
+      "Q-DPIA-016: NO"
+    ],
+    "Art.6": [
+      "Q-DPIA-006: CONSENT, CONTRACT, LEGAL_OBLIGATION"
+    ],
+    "Art.5(1)(e)": [
+      "Q-DPIA-008: 12"
+    ],
+    "Art.4(7)-(8)": [
+      "Q-DPIA-009: CONTROLLER"
+    ],
+    "Art.26": [
+      "Q-DPIA-010: YES"
+    ],
+    "Art.44-49": [
+      "Q-DPIA-011: NO"
+    ],
+    "Art.46": [
+      "Q-DPIA-012: SCC, BCR"
+    ],
+    "Art.28": [
+      "Q-DPIA-013: YES"
+    ],
+    "Art.22": [
+      "Q-DPIA-014: YES"
+    ],
+    "Recital 75": [
+      "Q-DPIA-015: YES",
+      "Q-DPIA-017: NO"
+    ],
+    "Art.32": [
+      "Q-DPIA-018: YES",
+      "Q-DPIA-021: PARTIAL"
+    ],
+    "Art.32(1)(a)": [
+      "Q-DPIA-019A: PARTIAL",
+      "Q-DPIA-019B: PARTIAL"
+    ],
+    "Art.32(1)(c)": [
+      "Q-DPIA-020: YES"
+    ],
+    "Art.30": [
+      "Q-DPIA-021: PARTIAL"
+    ],
+    "Art.39(1)(b)": [
+      "Q-DPIA-022: YES"
+    ],
+    "Art.33-34": [
+      "Q-DPIA-023: YES"
+    ],
+    "Art.13-14": [
+      "Q-DPIA-024: YES"
+    ],
+    "Art.15-22": [
+      "Q-DPIA-025: ACCESS, RECTIFICATION, ERASURE, PORTABILITY, RESTRICTION"
+    ],
+    "Art.7": [
+      "Q-DPIA-026: YES"
+    ],
+    "Art.21": [
+      "Q-DPIA-026: YES"
+    ],
+    "Recital 76": [
+      "Q-DPIA-027: HIGH",
+      "Q-DPIA-028: MEDIUM"
+    ],
+    "Art.35(7)(d)": [
+      "Q-DPIA-029: YES"
+    ]
+  },
+  "key_facts": {
+    "data_subjects": [
+      "CUSTOMERS",
+      "EMPLOYEES",
+      "CONTRACTORS",
+      "USERS",
+      "PROSPECTS"
+    ],
+    "purposes": [
+      "HR_ADMINISTRATION",
+      "CUSTOMER_MANAGEMENT",
+      "SERVICE_PROVISION",
+      "FRAUD_PREVENTION",
+      "SECURITY_MONITORING",
+      "RESEARCH_AND_DEVELOPMENT",
+      "IT_OPERATIONS"
+    ],
+    "data_categories": [
+      "IDENTITY",
+      "CONTACT",
+      "FINANCIAL",
+      "LOCATION",
+      "ONLINE_IDENTIFIER",
+      "EDUCATION",
+      "CUSTOMER_BEHAVIOR"
+    ],
+    "special_categories": [
+      "POLITICAL",
+      "RELIGIOUS"
+    ],
+    "legal_basis": [
+      "CONSENT",
+      "CONTRACT",
+      "LEGAL_OBLIGATION"
+    ],
+    "processors": [
+      "CONTROLLER"
+    ],
+    "transfers": {
+      "flag": "NO",
+      "mechanisms": [
+        "SCC",
+        "BCR"
+      ]
+    },
+    "rights_processes": [
+      "ACCESS",
+      "RECTIFICATION",
+      "ERASURE",
+      "PORTABILITY",
+      "RESTRICTION"
+    ]
+  }
+}

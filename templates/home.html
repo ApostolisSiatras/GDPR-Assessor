@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <section class="hero">
+    <h1>Assessment workspace</h1>
+    <p>Complete the DPIA and GAP questionnaires to unlock analytics, RoPA, DPIA summaries, and official policy generation.</p>
+    <div class="status-row" style="margin-top:1rem;">
+      {% set remaining = cards|length - cards|selectattr('done')|list|length %}
+      {% if cards %}
+        <span class="badge">
+          {% if all_done %}All accessible modules completed{% else %}{{ remaining }} of {{ cards|length }} remaining{% endif %}
+        </span>
+      {% else %}
+        <span class="badge">No modules enabled. Update access control below.</span>
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="grid">
+    {% for card in cards %}
+      <div class="panel">
+        <div class="flex-between">
+          <div>
+            <h3>{{ card.meta.label }}</h3>
+            <p style="color:#475467; margin-top:0.2rem;">{{ card.meta.description }}</p>
+          </div>
+          <span class="status-row">
+            <span class="status-dot {% if card.done %}complete{% endif %}"></span>
+            {% if card.done %}
+              Completed
+            {% elif card.action == "Resume" %}
+              In progress
+            {% else %}
+              Pending
+            {% endif %}
+          </span>
+        </div>
+        {% if card.percent %}
+          <p style="font-weight:600; margin-top:0.5rem;">Score: {{ card.percent }}%</p>
+        {% endif %}
+        <a class="btn" style="margin-top:1rem;" href="{{ url_for('assessment_form', mode=card.mode) }}">{{ card.action }}</a>
+      </div>
+    {% endfor %}
+  </section>
+
+  {% if all_done and cards %}
+    <div class="notice">
+      All enabled assessments are complete. Proceed to analytics or export official documentation.
+      <div style="margin-top:0.8rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+        <a class="btn" href="{{ url_for('results') }}">Open analytics</a>
+        <a class="btn btn-secondary" href="{{ url_for('official_policy_page') }}">Official GDPR policy</a>
+      </div>
+    </div>
+  {% else %}
+    {% if next_mode %}
+      <div class="notice">
+        Next available module: <strong>{{ schema_choices[next_mode].label }}</strong>
+      </div>
+    {% endif %}
+  {% endif %}
+
+  <section class="panel" style="margin-top:2rem;">
+    <h3>Access control</h3>
+    <p>Select which assessments are available for this session. At least one module must remain enabled.</p>
+    <form action="{{ url_for('update_access_control') }}" method="post" style="margin-top:1rem;">
+      <div class="checkbox-grid">
+        {% for mode_name in assessment_modes %}
+          <label>
+            <input type="checkbox" name="allowed_modes" value="{{ mode_name }}" {% if access_control.get(mode_name) %}checked{% endif %} />
+            {{ schema_choices[mode_name].label }}
+          </label>
+        {% endfor %}
+      </div>
+      <button type="submit" class="btn btn-secondary" style="margin-top:1rem;">Save access control</button>
+    </form>
+  </section>
+
+  <form action="{{ url_for('reset_progress') }}" method="post" style="margin-top:2rem;">
+    <button type="submit" class="btn btn-secondary">Reset assessment data</button>
+  </form>
+{% endblock %}

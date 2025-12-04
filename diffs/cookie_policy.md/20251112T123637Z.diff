@@ -1,0 +1,85 @@
+--- 20251112T123254Z/cookie_policy.md
++++ 20251112T123637Z/cookie_policy.md
+@@ -7,53 +7,57 @@
+ 
+ Cookies are currently **disabled** on our website. We do not collect any information through cookies.
+ 
+-## Cookies Used
++We use cookies for the following purposes:
++* To improve user experience and functionality of our website.
++* To analyze website performance and make improvements.
+ 
+-We use cookies for the following purposes:
++## Cookie Categories
+ 
+ | Category | Description |
+ | --- | --- |
+ | None | No cookies are used |
+ 
+-## Retention of Cookies
++## Retention Period
+ 
+-The retention period for cookies is:
++| Type | Duration |
++| --- | --- |
++| Cookies | 1 month |
+ 
+-| Cookie Type | Retention Period |
++## Lawful Bases for Processing Personal Data through Cookies
++
++| Basis | Description |
+ | --- | --- |
+-| N/A | N/A |
+-
+-## Lawful Bases for Using Cookies
+-
+-We use the following lawful bases to justify our use of cookies:
+-
+-| Lawful Base | Description |
+-| --- | --- |
+-| N/A | N/A |
++| Consent | We obtain explicit consent from users before processing their personal data. |
++| Contract | We process personal data to fulfill our contractual obligations with users. |
++| Legal Obligation | We process personal data to comply with applicable laws and regulations. |
+ 
+ ## Processors Touching Cookies
+ 
+-The following processors have access to cookies:
+-
+-| Processor | Description |
++| Processor Type | Description |
+ | --- | --- |
+-| N/A | N/A |
++| Controller | We are the controller of your personal data. |
++| Joint Controller | We jointly control your personal data with other organizations. |
++| Processor | We use third-party processors to process your personal data. |
+ 
+ ## Managing Cookies
+ 
+-If you wish to manage your cookie preferences, please note that we do not currently use any cookies. However, if this changes in the future, you will be able to control your cookie settings through our website.
++You can manage cookies by adjusting your browser settings or using cookie management tools.
+ 
+-## Transfers of Personal Data
++## Transfers
+ 
+-We do not transfer personal data outside of the European Economic Area (EEA) for the purposes of using cookies.
++We may transfer your personal data to third countries outside the European Economic Area (EEA). The transfers are subject to the following mechanisms:
++* Adequacy
++* Standard Contractual Clauses (SCC)
++* Binding Corporate Rules (BCR)
+ 
+ ## Security Measures
+ 
+-We have implemented the following security measures to protect your personal data:
++We have implemented security measures to protect your personal data, including:
+ 
+-| Measure | Description |
+-| --- | --- |
++* Encryption
++* Access controls
++* Regular security audits and testing
+ 
+ ## Contact
+ 
+-If you have any questions or concerns about our cookie policy, please contact us at [Email: Dr Christos Kalloniatis](mailto:DrChristosKalloniatis).
++If you have any questions or concerns about our cookie policy, please contact our Data Protection Officer at [insert contact information].

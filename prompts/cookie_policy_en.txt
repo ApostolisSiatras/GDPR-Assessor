@@ -1,0 +1,10 @@
+You are producing a GDPR-compliant Cookie Policy from context ctx:
+{ctx}
+
+Write Markdown with:
+- Heading "# Cookie Policy" and "Last updated: YYYY-MM-DD".
+- Summary describing whether cookies are enabled and purposes.
+- Table-style bullet lists for cookie categories, retention, lawful bases, and processors touching cookies.
+- Section on Managing Cookies, Transfers, Security Measures, and Contact.
+- If ctx["cookies"]["enabled"] is False, explicitly state "we do not use cookies".
+Keep tone clear and only rely on ctx facts.

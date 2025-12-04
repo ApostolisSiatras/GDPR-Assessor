@@ -1,0 +1,27 @@
+{
+  "activities": [
+    {
+      "categories_of_data": [
+        "Personal data"
+      ],
+      "data_subjects": [
+        "Data subjects"
+      ],
+      "lawful_basis": "Consent",
+      "name": "",
+      "purpose": "",
+      "recipients": [
+        "Controller",
+        "Joint Controller",
+        "Processor"
+      ],
+      "retention": "1 month",
+      "security_measures": [],
+      "transfers": [
+        "Adequacy",
+        "SCC",
+        "BCR"
+      ]
+    }
+  ]
+}

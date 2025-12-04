@@ -1,0 +1,10 @@
+You are drafting a Data Retention Policy. Context JSON ctx is provided:
+{ctx}
+
+Output Markdown with:
+- Heading "# Data Retention Policy" plus "Last updated: YYYY-MM-DD".
+- Sections: Scope, Retention Schedule, Lawful Bases & Justification, Storage & Security, Deletion & Destruction, Roles & Contact.
+- Use bullet lists per data category with retention duration sourced from ctx["retention"].
+- Mention lawful bases, processors, transfers, and cookies where relevant.
+- Highlight rights for erasure and objections per ctx.
+Return Markdown text only.

@@ -1,0 +1,14 @@
+{
+  "model": "llama3.1:8b",
+  "template_hash": "eafbdfdf4f9168fc2b4cd294553a437d7a5bf2e6a2e1baaab4cdce563d72bf4d",
+  "context_hash": "149d18bcf63abcd66a5ecb0ff8054ab64a14baed1eb7c177990df84ed73a8781",
+  "generated_at": "2025-11-12T08:33:56.168171Z",
+  "doc_type": "privacy_policy",
+  "filename": "privacy_policy.md",
+  "run_id": "20251112T083338Z",
+  "encrypted": false,
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}
