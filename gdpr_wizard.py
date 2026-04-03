@@ -1,4 +1,14 @@
 #!/usr/bin/env python3
+"""
+EL: Core assessment engine για DPIA/GAP questionnaires και scoring.
+EN: Core assessment engine for DPIA/GAP questionnaires and scoring.
+
+EL: Το module χρησιμοποιείται τόσο από CLI όσο και από το Flask app.
+Παρέχει shared data models, scoring logic και markdown rendering.
+
+EN: This module is used by both CLI and Flask app. It provides shared
+data models, scoring logic, and markdown rendering.
+"""
 
 from __future__ import annotations
 
@@ -6,16 +16,22 @@ import argparse
 import json
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional
 
 
-# ----------------------------- Data model layer ----------------------------- #
+# EL: Data model layer (Question/Schema).
+# EN: Data model layer (Question/Schema).
 
 
 @dataclass
 class Question:
+    """
+    EL: Domain model μίας ερώτησης schema με metadata scoring/compliance.
+    EN: Domain model for one schema question with scoring/compliance metadata.
+    """
+
     id: str
     section: str
     text: str
@@ -58,6 +74,11 @@ class Question:
 
 
 class SchemaBundle:
+    """
+    EL: Φορτώνει schema + vocabularies και παράγει typed Question list.
+    EN: Loads schema + vocabularies and produces typed Question list.
+    """
+
     def __init__(self, schema_path: Path, vocabs_path: Path):
         self.schema_path = schema_path
         self.vocabs_path = vocabs_path
@@ -70,23 +91,16 @@ class SchemaBundle:
         ]
 
 
-_MAPPING_CACHE: Dict[Path, Dict[str, Any]] = {}
-
-
-def _load_mapping(mapping_path: Path) -> Dict[str, Any]:
-    resolved = mapping_path.resolve()
-    cached = _MAPPING_CACHE.get(resolved)
-    if cached is None:
-        with resolved.open("r", encoding="utf-8") as fh:
-            cached = json.load(fh)
-        _MAPPING_CACHE[resolved] = cached
-    return cached
-
-
-# ----------------------------- Wizard interface ----------------------------- #
+# EL: Wizard interface layer (interactive CLI input).
+# EN: Wizard interface layer (interactive CLI input).
 
 
 class TerminalWizard:
+    """
+    EL: Interactive CLI wizard για συλλογή απαντήσεων από χρήστη.
+    EN: Interactive CLI wizard for collecting user answers.
+    """
+
     def __init__(self, bundle: SchemaBundle):
         self.bundle = bundle
 
@@ -181,23 +195,24 @@ class TerminalWizard:
             print(f"Select any of: {opts}")
 
 
-# ----------------------------- Assessment layer ----------------------------- #
+# EL: Assessment layer (scoring, gaps, risk indicators).
+# EN: Assessment layer (scoring, gaps, risk indicators).
 
 
 class AssessmentBuilder:
-    def __init__(self, bundle: SchemaBundle, answers: Dict[str, Any], mapping_path: Optional[Path] = None):
+    """
+    EL: Υπολογίζει scores, gaps και traceability metadata από answers.
+    EN: Computes scores, gaps, and traceability metadata from answers.
+    """
+
+    def __init__(self, bundle: SchemaBundle, answers: Dict[str, Any]):
         self.bundle = bundle
         self.answers = answers
-        self.mapping: Dict[str, Any] = {}
-        if mapping_path:
-            resolved = Path(mapping_path)
-            if resolved.exists():
-                self.mapping = _load_mapping(resolved)
 
     def build(self) -> Dict[str, Any]:
         sections = self._section_scores()
         summary = {
-            "generated_at": datetime.utcnow().isoformat() + "Z",
+            "generated_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
             "schema": self.bundle.schema_path.name,
             "sections": sections,
             "overall_score": self._overall_score(sections),
@@ -347,7 +362,8 @@ class AssessmentBuilder:
         return str(ans)
 
 
-# ----------------------------- Output helpers ------------------------------- #
+# EL: Output helpers (JSON/Markdown export).
+# EN: Output helpers (JSON/Markdown export).
 
 
 def write_outputs(base: Path, mode: str, answers: Dict[str, Any], assessment: Dict[str, Any]) -> None:
@@ -413,7 +429,8 @@ def render_markdown(assessment: Dict[str, Any]) -> str:
     return "\n".join(lines).strip() + "\n"
 
 
-# ----------------------------- CLI entrypoint ------------------------------- #
+# EL: CLI entrypoint και argument parsing.
+# EN: CLI entrypoint and argument parsing.
 
 
 def parse_args(argv: Optional[Iterable[str]] = None) -> argparse.Namespace:
@@ -426,7 +443,6 @@ def parse_args(argv: Optional[Iterable[str]] = None) -> argparse.Namespace:
     )
     parser.add_argument("--schema", type=Path, help="Path to custom schema JSON.")
     parser.add_argument("--vocabs", type=Path, default=Path("vocabs.json"), help="Vocabulary JSON path.")
-    parser.add_argument("--mapping", type=Path, default=Path("mapping.json"), help="Mapping JSON path for derived facts.")
     parser.add_argument("--output", type=Path, default=Path("reports"), help="Directory for generated reports.")
     return parser.parse_args(argv)
 
@@ -453,7 +469,7 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
     bundle = SchemaBundle(schema_path, args.vocabs)
     wizard = TerminalWizard(bundle)
     answers = wizard.run()
-    assessment = AssessmentBuilder(bundle, answers, args.mapping).build()
+    assessment = AssessmentBuilder(bundle, answers).build()
     write_outputs(args.output, args.mode, answers, assessment)
     print(f"\nAssessment saved under {args.output}/ as {args.mode}_*.json/.md")
     return 0

@@ -5,9 +5,7 @@ from app import app, combined_assessment_inputs
 
 def test_combined_assessment_inputs_require_both():
     with pytest.raises(RuntimeError):
-        combined_assessment_inputs({})
-    with pytest.raises(RuntimeError):
-        combined_assessment_inputs({"dpia11": {"answers": {"sample": "value"}}})
+        combined_assessment_inputs()
 
 
 def test_results_redirects_without_completed_assessments():

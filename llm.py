@@ -1,3 +1,14 @@
+"""
+EL: Adapter για κλήσεις προς το τοπικό Ollama endpoint.
+EN: Adapter for calls to the local Ollama endpoint.
+
+EL: Το module αυτό απομονώνει HTTP επικοινωνία και parsing ώστε οι υπόλοιπες
+υπηρεσίες (policy_engine, reports) να εξαρτώνται από ένα σταθερό API.
+
+EN: This module isolates HTTP transport and parsing so downstream services
+(policy_engine, reports) can depend on a stable API.
+"""
+
 from __future__ import annotations
 
 import json
@@ -9,24 +20,46 @@ import requests
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434/api/generate")
 DEFAULT_MODEL = "llama3.1:8b"
 DEFAULT_TEMPERATURE = 0.2
+REQUEST_TIMEOUT_SECONDS = 60
 
 
-def run_ollama(prompt: str, model: str = DEFAULT_MODEL, options: Optional[Dict[str, Any]] = None, stream: bool = False) -> str:
-    """Call the local Ollama REST API and return the generated text."""
-    payload: Dict[str, Any] = {"model": model, "prompt": prompt, "stream": stream}
-    opts = {"temperature": DEFAULT_TEMPERATURE}
+def run_ollama(
+    prompt: str,
+    model: str = DEFAULT_MODEL,
+    options: Optional[Dict[str, Any]] = None,
+    stream: bool = False,
+) -> str:
+    """
+    EL: Εκτελεί prompt στο Ollama API και επιστρέφει το concatenated μοντέλο output.
+    EN: Executes a prompt against Ollama API and returns concatenated model output.
+    """
+
+    payload: Dict[str, Any] = {
+        "model": model,
+        "prompt": prompt,
+        "stream": stream,
+    }
+    merged_options = {"temperature": DEFAULT_TEMPERATURE}
     if options:
-        opts.update(options)
-    payload["options"] = opts
+        merged_options.update(options)
+    payload["options"] = merged_options
+
     try:
-        response = requests.post(OLLAMA_URL, json=payload, stream=stream, timeout=60)
-    except requests.RequestException as exc:  # pragma: no cover - network failure path
-        raise RuntimeError("Failed to reach local Ollama service on 11434.") from exc
+        response = requests.post(
+            OLLAMA_URL,
+            json=payload,
+            stream=stream,
+            timeout=REQUEST_TIMEOUT_SECONDS,
+        )
+    except requests.RequestException as exc:  # pragma: no cover - EL: network αστοχία / EN: network failure path
+        raise RuntimeError("Failed to reach local Ollama service on port 11434.") from exc
+
     if response.status_code != 200:
         snippet = response.text[:200]
         raise RuntimeError(f"Ollama request failed ({response.status_code}): {snippet}")
+
     if stream:
-        chunks = []
+        chunks: list[str] = []
         for line in response.iter_lines():
             if not line:
                 continue
@@ -38,32 +71,9 @@ def run_ollama(prompt: str, model: str = DEFAULT_MODEL, options: Optional[Dict[s
             if data.get("done"):
                 break
         return "".join(chunks)
-    data = response.json()
-    return data.get("response", "")
 
-
-def json_block(text: str) -> Dict[str, Any]:
-    """Extract the last JSON object from the model output and parse it."""
-    if not text:
-        raise ValueError("No text to parse for JSON block.")
-    depth = 0
-    start = None
-    end = None
-    for idx in range(len(text) - 1, -1, -1):
-        char = text[idx]
-        if char == "}":
-            if depth == 0:
-                end = idx + 1
-            depth += 1
-        elif char == "{":
-            depth -= 1
-            if depth == 0:
-                start = idx
-                break
-    if start is None or end is None:
-        raise ValueError("No JSON object found in model output.")
-    block = text[start:end]
     try:
-        return json.loads(block)
-    except json.JSONDecodeError as exc:
-        raise ValueError("Model output did not contain valid JSON.") from exc
+        data = response.json()
+    except ValueError as exc:
+        raise RuntimeError("Ollama returned a non-JSON response.") from exc
+    return data.get("response", "")

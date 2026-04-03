@@ -1,5 +1,9 @@
-from __future__ import annotations
+"""
+EL: Rendering layer για markdown -> HTML/PDF μετατροπές.
+EN: Rendering layer for markdown -> HTML/PDF conversions.
+"""
 
+from __future__ import annotations
 import html
 import re
 from datetime import UTC, datetime
@@ -31,6 +35,11 @@ def _format_inline(raw: str) -> str:
 
 
 def markdown_to_html(md_text: str) -> str:
+    """
+    EL: Μετατρέπει markdown σε lightweight, self-contained HTML document.
+    EN: Converts markdown into a lightweight, self-contained HTML document.
+    """
+
     lines = (md_text or "").splitlines()
     html_lines: List[str] = []
     in_ul = False
@@ -90,6 +99,11 @@ def markdown_to_html(md_text: str) -> str:
 
 
 def markdown_to_pdf_bytes(markdown_text: str, policy_number: str, signature: str) -> bytes:
+    """
+    EL: Δημιουργεί signed policy PDF με header/watermark και encryption.
+    EN: Builds a signed policy PDF with header/watermark and encryption.
+    """
+
     buffer = BytesIO()
     doc = SimpleDocTemplate(
         buffer,
@@ -193,6 +207,11 @@ def markdown_to_pdf_bytes(markdown_text: str, policy_number: str, signature: str
 
 
 def markdown_to_pdf_report(markdown_text: str, title: str, subtitle: Optional[str] = None) -> bytes:
+    """
+    EL: Παράγει αναφορά PDF για module narratives με σταθερή μορφοποίηση.
+    EN: Generates report PDF for module narratives with stable formatting.
+    """
+
     buffer = BytesIO()
     doc = SimpleDocTemplate(
         buffer,
@@ -290,7 +309,73 @@ def markdown_to_pdf_report(markdown_text: str, title: str, subtitle: Optional[st
     return buffer.read()
 
 
+def _markdown_to_docx_text(raw: str) -> str:
+    """
+    EL: Μετατρέπει basic markdown inline syntax σε plain text για DOCX output.
+    EN: Converts basic markdown inline syntax to plain text for DOCX output.
+    """
+
+    text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r"\1 (\2)", raw)
+    text = re.sub(r"\*\*(.+?)\*\*", r"\1", text)
+    text = re.sub(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)", r"\1", text)
+    return text.strip()
+
+
+def markdown_to_docx_bytes(markdown_text: str, title: str, subtitle: Optional[str] = None) -> bytes:
+    """
+    EL: Παράγει editable DOCX από markdown για επεξεργασία σε Word/Google Docs.
+    EN: Produces editable DOCX from markdown for Word/Google Docs editing.
+    """
+
+    try:
+        from docx import Document
+    except Exception as exc:  # pragma: no cover - optional dependency path
+        if PANDOC_PATH:
+            return convert_markdown_with_pandoc(markdown_text, "docx")
+        raise RuntimeError("DOCX export requires python-docx or Pandoc.") from exc
+
+    doc = Document()
+    doc.add_heading(title, level=0)
+    if subtitle:
+        doc.add_paragraph(subtitle)
+    doc.add_paragraph(f"Generated {datetime.now(UTC).strftime('%Y-%m-%d %H:%M %Z')}")
+
+    lines = markdown_text.splitlines()
+    for raw in lines:
+        stripped = raw.strip()
+        if not stripped:
+            doc.add_paragraph("")
+            continue
+        if stripped.startswith("### "):
+            doc.add_heading(_markdown_to_docx_text(stripped[4:]), level=3)
+            continue
+        if stripped.startswith("## "):
+            doc.add_heading(_markdown_to_docx_text(stripped[3:]), level=2)
+            continue
+        if stripped.startswith("# "):
+            doc.add_heading(_markdown_to_docx_text(stripped[2:]), level=1)
+            continue
+        if stripped.startswith("- ") or stripped.startswith("* "):
+            doc.add_paragraph(_markdown_to_docx_text(stripped[2:]), style="List Bullet")
+            continue
+        ordered_match = re.match(r"^(\d+)\.\s+(.*)", stripped)
+        if ordered_match:
+            doc.add_paragraph(_markdown_to_docx_text(ordered_match.group(2)), style="List Number")
+            continue
+        doc.add_paragraph(_markdown_to_docx_text(stripped))
+
+    buffer = BytesIO()
+    doc.save(buffer)
+    buffer.seek(0)
+    return buffer.read()
+
+
 def convert_markdown_with_pandoc(markdown_text: str, target_format: str) -> bytes:
+    """
+    EL: Χρησιμοποιεί pandoc για conversion όταν είναι διαθέσιμο στο runtime.
+    EN: Uses pandoc for conversion when available in runtime.
+    """
+
     if not PANDOC_PATH:
         raise RuntimeError("Pandoc is not installed; conversion unavailable.")
     import tempfile
@@ -307,7 +392,7 @@ def convert_markdown_with_pandoc(markdown_text: str, target_format: str) -> byte
                 check=True,
                 capture_output=True,
             )
-        except subprocess.CalledProcessError as exc:  # pragma: no cover
+        except subprocess.CalledProcessError as exc:  # pragma: no cover - EL: εξωτερικό εργαλείο / EN: external tool failure
             raise RuntimeError(
                 f"Pandoc conversion failed: {exc.stderr.decode('utf-8', errors='ignore')}"
             ) from exc

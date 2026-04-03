@@ -1,16 +1,30 @@
+"""
+EL: Κύριο web entrypoint του GDPR Assessor (Flask).
+EN: Main web entrypoint for the GDPR Assessor (Flask).
+
+EL: Το module συνδέει routing, session orchestration, scoring pipelines,
+policy generation και exports. Η καθαρή ροή είναι:
+request -> parse/validate -> assessment/report services -> rendered output.
+
+EN: This module connects routing, session orchestration, scoring pipelines,
+policy generation, and exports. The main flow is:
+request -> parse/validate -> assessment/report services -> rendered output.
+"""
+
 from __future__ import annotations
 
 import io
 import json
-import os
+import logging
 import re
 import zipfile
-from datetime import datetime, UTC
-from collections import Counter, OrderedDict
+from collections import OrderedDict
+from datetime import UTC, datetime
 from hmac import compare_digest
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urljoin, urlparse
+
 from flask import Flask, abort, flash, g, redirect, render_template, request, send_file, session, url_for
 
 from gdpr_wizard import AssessmentBuilder, Question, SchemaBundle, resolve_schema, render_markdown
@@ -18,19 +32,24 @@ from cookie_audit import run_cookie_audit, summarize_cookie_audit
 from policy_engine import (
     OFFICIAL_POLICY_PROMPTS,
     build_llm_context,
-    create_official_policy,
     generate_module_report,
-    load_official_policy,
 )
-from policy_engine.config import OUTPUT_BASE
-from policy_engine.rendering import markdown_to_html, markdown_to_pdf_report
+from policy_engine.config import MODEL_NAME
+from policy_engine.official_policy import generate_official_policy_sections
+from policy_engine.rendering import markdown_to_docx_bytes, markdown_to_html, markdown_to_pdf_bytes, markdown_to_pdf_report
+from policy_engine.storage import hash_text
+from platform_config import load_platform_config
+from runtime_store import RuntimeSessionStore, RuntimeStoreConfig
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "gdpr-dpia-secret"
-app.config.setdefault("PLATFORM_USERNAME", os.environ.get("PLATFORM_USERNAME", "Tolis"))
-app.config.setdefault("PLATFORM_PASSWORD", os.environ.get("PLATFORM_PASSWORD", "Siatras"))
+SETTINGS = load_platform_config()
+app.config["SECRET_KEY"] = SETTINGS.secret_key
+app.config.setdefault("PLATFORM_USERNAME", SETTINGS.platform_username)
+app.config.setdefault("PLATFORM_PASSWORD", SETTINGS.platform_password)
 app.config.setdefault("SESSION_COOKIE_HTTPONLY", True)
 app.config.setdefault("SESSION_COOKIE_SAMESITE", "Lax")
+
+logger = logging.getLogger(__name__)
 
 SCHEMA_CHOICES: Dict[str, Dict[str, str]] = {
     "dpia11": {
@@ -49,7 +68,6 @@ QUESTION_CACHE: Dict[str, Dict[str, Question]] = {}
 QUESTION_CACHE_STAMP: Dict[str, Optional[Tuple[float, float]]] = {}
 BUNDLE_CACHE: Dict[str, SchemaBundle] = {}
 BUNDLE_CACHE_STAMP: Dict[str, Tuple[float, float]] = {}
-REPORT_ACCESS_TOKEN = os.environ.get("REPORT_ACCESS_TOKEN")
 GDPR_REFERENCE_CACHE: Dict[str, Tuple[Tuple[str, str], ...]] = {}
 
 GDPR_ARTICLE_BASE_URL = "https://www.privacy-regulation.eu/en/{article}.htm"
@@ -83,13 +101,11 @@ LIKELIHOOD_KEYWORDS = {
 }
 IMPACT_LEVELS = ["Low", "Medium", "High"]
 LIKELIHOOD_LEVELS = ["Rare", "Possible", "Likely"]
-MODULE_REPORT_DIR = OUTPUT_BASE / "module_reports"
-MODULE_REPORT_DIR.mkdir(parents=True, exist_ok=True)
-ASSESSMENT_STORE = OUTPUT_BASE / "assessments"
-ASSESSMENT_STORE.mkdir(parents=True, exist_ok=True)
 ARTICLE_REF_RE = re.compile(r"Art\.?\s*(\d+)(?:\s*\((\d+)\))?(?:\s*\(([a-zA-Z])\))?", re.IGNORECASE)
 RECITAL_REF_RE = re.compile(r"Recital\s*(\d+)", re.IGNORECASE)
 AUTH_EXEMPT_ENDPOINTS = {"login", "healthcheck", "static"}
+RUNTIME_STORE = RuntimeSessionStore(RuntimeStoreConfig(ttl_seconds=SETTINGS.session_runtime_ttl_seconds))
+REPORT_ACCESS_TOKEN = SETTINGS.report_access_token
 
 
 def _login_disabled() -> bool:
@@ -101,15 +117,26 @@ def _is_authenticated() -> bool:
 
 
 def _verify_credentials(username: str, password: str) -> bool:
+    """
+    EL: Επαληθεύει credentials με timing-safe compare για αποφυγή leaks.
+    EN: Verifies credentials with timing-safe comparisons to reduce leaks.
+    """
+
     expected_user = app.config["PLATFORM_USERNAME"]
     expected_pass = app.config["PLATFORM_PASSWORD"]
     return compare_digest(username or "", expected_user) and compare_digest(password or "", expected_pass)
 
 
 def _safe_next_path(target: Optional[str]) -> Optional[str]:
+    """
+    EL: Επιτρέπει redirect μόνο σε local paths για αποτροπή open redirects.
+    EN: Allows redirects only to local paths to prevent open redirect issues.
+    """
+
     if not target:
         return None
-    # Normalize relative URLs to prevent open redirect issues.
+    # EL: Κανονικοποιούμε relative URLs για αποτροπή open redirects.
+    # EN: Normalize relative URLs to prevent open redirect issues.
     ref_url = urlparse(request.host_url)
     next_url = urlparse(urljoin(request.host_url, target))
     if next_url.scheme in {"http", "https"} and next_url.netloc == ref_url.netloc:
@@ -120,8 +147,67 @@ def _safe_next_path(target: Optional[str]) -> Optional[str]:
     return None
 
 
+def _cleanup_runtime_sessions(now: Optional[datetime] = None) -> None:
+    """
+    EL: Καθαρίζει ληγμένα runtime buckets από το shared in-memory store.
+    EN: Cleans expired runtime buckets from the shared in-memory store.
+    """
+
+    RUNTIME_STORE.cleanup(now)
+
+
+def _runtime_bucket(create: bool = True) -> Optional[Dict[str, Any]]:
+    return RUNTIME_STORE.bucket(session, create=create)
+
+
+def _drop_runtime_bucket() -> None:
+    RUNTIME_STORE.drop_bucket(session)
+
+
+def _runtime_assessments() -> Dict[str, Dict[str, Any]]:
+    return RUNTIME_STORE.assessments(session)
+
+
+def _runtime_module_reports() -> Dict[str, Dict[str, Any]]:
+    return RUNTIME_STORE.module_reports(session)
+
+
+def _runtime_official_policies() -> Dict[str, Dict[str, Any]]:
+    return RUNTIME_STORE.official_policies(session)
+
+
+def _get_current_official_policy_run_id() -> Optional[str]:
+    return RUNTIME_STORE.current_policy_run_id(session)
+
+
+def _reset_workspace_session() -> None:
+    """
+    EL: Καθαρίζει πλήρως runtime/session state ώστε κάθε login να ξεκινά καθαρά.
+    EN: Fully clears runtime/session state so each login starts from a clean workspace.
+    """
+
+    _drop_runtime_bucket()
+    session.clear()
+
+
+@app.after_request
+def _apply_no_store_headers(response):
+    """
+    EL: Αποτρέπει browser caching για HTML ώστε να μην επανεμφανίζονται φόρμες/τιμές.
+    EN: Prevents browser caching for HTML responses so forms/values are not resurfaced.
+    """
+
+    content_type = response.headers.get("Content-Type", "")
+    if request.method == "GET" and "text/html" in content_type:
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+    return response
+
+
 @app.before_request
 def _enforce_authentication():
+    _cleanup_runtime_sessions()
     if _login_disabled():
         return
     endpoint = (request.endpoint or "").split(".")[0]
@@ -159,12 +245,17 @@ def login():
     safe_target = _safe_next_path(redirect_target)
     if _is_authenticated():
         return redirect(safe_target or url_for("home"))
+    if request.method == "GET":
+        # EL: Δεν κρατάμε παλιές τιμές μεταξύ browser login sessions.
+        # EN: Do not keep stale values between browser login sessions.
+        _reset_workspace_session()
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
         if _verify_credentials(username, password):
+            _reset_workspace_session()
             session["auth_user"] = username
-            session.permanent = True
+            session.permanent = False
             return redirect(safe_target or url_for("home"))
         error = "Invalid username or password."
     return render_template("login.html", error=error, next=safe_target or redirect_target or "")
@@ -172,17 +263,22 @@ def login():
 
 @app.route("/logout")
 def logout():
-    session.pop("auth_user", None)
+    _reset_workspace_session()
     flash("You have been signed out.", "success")
     return redirect(url_for("login"))
 
 
 def build_helper_payload() -> Optional[Dict[str, Any]]:
+    """
+    EL: Δημιουργεί contextual βοηθητικό payload για το UI assistant panel.
+    EN: Builds contextual helper payload for the UI assistant panel.
+    """
+
     endpoint = request.endpoint or ""
     view_args = request.view_args or {}
     mode = view_args.get("mode")
     assessments = session.get("assessments", {}) or {}
-    has_assessments = any((entry or {}).get("answers") or (entry or {}).get("answers_path") for entry in assessments.values())
+    has_assessments = bool(assessments)
     dpia_url = url_for("assessment_form", mode="dpia11")
     gap_url = url_for("assessment_form", mode="gap")
     helper_map: Dict[str, Dict[str, Any]] = {
@@ -326,10 +422,16 @@ def _bundle_stamp(schema_path: Path) -> Optional[Tuple[float, float]]:
     try:
         return (schema_path.stat().st_mtime, VOCAB_PATH.stat().st_mtime)
     except OSError:
+        logger.warning("Unable to stat schema/vocabulary paths for cache stamp.", exc_info=True)
         return None
 
 
 def load_bundle(mode: str) -> SchemaBundle:
+    """
+    EL: Φορτώνει schema/vocabulary bundle με cache invalidation σε file change.
+    EN: Loads the schema/vocabulary bundle with file-based cache invalidation.
+    """
+
     schema_path = resolve_schema(mode, None)
     stamp = _bundle_stamp(schema_path)
     cached = BUNDLE_CACHE.get(mode)
@@ -370,41 +472,22 @@ def _new_run_id() -> str:
     return datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
 
 
-def _load_json_file(path: Optional[str]) -> Optional[Dict[str, Any]]:
-    if not path:
-        return None
-    try:
-        return json.loads(Path(path).read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError, TypeError):
-        return None
-
-
-def _load_text_file(path: Optional[str]) -> Optional[str]:
-    if not path:
-        return None
-    try:
-        return Path(path).read_text(encoding="utf-8")
-    except OSError:
-        return None
-
-
 def save_assessment_files(mode: str, answers: Dict[str, Any], assessment: Dict[str, Any]) -> Dict[str, Any]:
     run_id = _new_run_id()
-    run_dir = ASSESSMENT_STORE / f"{mode}-{run_id}"
-    run_dir.mkdir(parents=True, exist_ok=True)
-    answers_path = run_dir / "answers.json"
-    assessment_path = run_dir / "assessment.json"
-    markdown_path = run_dir / "assessment.md"
-    answers_path.write_text(json.dumps(answers, indent=2), encoding="utf-8")
-    assessment_path.write_text(json.dumps(assessment, indent=2), encoding="utf-8")
     markdown_value = render_markdown(assessment)
-    markdown_path.write_text(markdown_value, encoding="utf-8")
+    _runtime_assessments()[mode] = {
+        "mode": mode,
+        "run_id": run_id,
+        "answers": answers,
+        "assessment": assessment,
+        "markdown": markdown_value,
+        "percent": assessment.get("overall_score", {}).get("percent"),
+        "rating": assessment.get("overall_score", {}).get("rating"),
+        "generated_at": assessment.get("generated_at"),
+    }
     return {
         "mode": mode,
         "run_id": run_id,
-        "answers_path": str(answers_path),
-        "assessment_path": str(assessment_path),
-        "markdown_path": str(markdown_path),
         "percent": assessment.get("overall_score", {}).get("percent"),
         "rating": assessment.get("overall_score", {}).get("rating"),
         "generated_at": assessment.get("generated_at"),
@@ -414,23 +497,28 @@ def save_assessment_files(mode: str, answers: Dict[str, Any], assessment: Dict[s
 def load_assessment_payload(
     mode: str, entry: Dict[str, Any]
 ) -> Tuple[Optional[Dict[str, Any]], Optional[Dict[str, Any]], Optional[str]]:
-    answers = entry.get("answers") or _load_json_file(entry.get("answers_path"))
-    assessment = entry.get("assessment") or _load_json_file(entry.get("assessment_path"))
+    answers = entry.get("answers")
+    assessment = entry.get("assessment")
     if assessment is None and answers:
         try:
             assessment = run_assessment(mode, load_bundle(mode), answers)
         except Exception:
+            logger.exception("Failed to rebuild assessment payload for mode '%s'.", mode)
             assessment = None
-    markdown = entry.get("markdown") or _load_text_file(entry.get("markdown_path"))
+    markdown = entry.get("markdown")
     if markdown is None and assessment:
         markdown = render_markdown(assessment)
     return answers, assessment, markdown
 
 
 def get_session_assessment(mode: str) -> Optional[Dict[str, Any]]:
-    assessments = session.get("assessments", {}) or {}
-    entry = assessments.get(mode)
+    entry = _runtime_assessments().get(mode)
     if not entry:
+        completed = session.get("assessments", {}) or {}
+        if mode in completed:
+            completed.pop(mode, None)
+            session["assessments"] = completed
+            session.modified = True
         return None
     answers, assessment, markdown = load_assessment_payload(mode, entry)
     if not answers:
@@ -449,28 +537,31 @@ def rebuild_assessment_from_entry(mode: str, entry: Dict[str, Any]) -> Optional[
     return assessment
 
 
-def _module_report_path(mode: str, run_id: str) -> Path:
-    safe_run = re.sub(r"[^0-9A-Za-z_-]", "-", run_id)
-    return MODULE_REPORT_DIR / f"{mode}-{safe_run}.md"
-
-
-def save_module_report_file(mode: str, run_id: str, text: str) -> str:
-    path = _module_report_path(mode, run_id)
-    path.write_text(text, encoding="utf-8")
-    return str(path)
-
-
 def load_module_report_text(meta: Dict[str, Any]) -> Optional[str]:
-    path = meta.get("path")
-    if not path:
+    text = meta.get("text")
+    if isinstance(text, str):
+        return text
+    mode = meta.get("mode")
+    run_id = meta.get("run_id")
+    if not mode or not run_id:
         return None
-    file_path = Path(path)
-    if not file_path.exists():
+    report = _runtime_module_reports().get(mode)
+    if not report:
         return None
-    try:
-        return file_path.read_text(encoding="utf-8")
-    except OSError:
+    if report.get("run_id") != run_id:
         return None
+    report_text = report.get("text")
+    return report_text if isinstance(report_text, str) else None
+
+
+def load_runtime_official_policy(run_id: Optional[str]) -> Optional[Dict[str, Any]]:
+    target_run = run_id or _get_current_official_policy_run_id()
+    if not target_run:
+        return None
+    policy = _runtime_official_policies().get(target_run)
+    if not policy:
+        return None
+    return dict(policy)
 
 
 def _article_anchor(article: int, paragraph: Optional[str], letter: Optional[str]) -> Optional[str]:
@@ -598,9 +689,9 @@ def merge_assessments(dpia: Dict[str, Any], gap: Dict[str, Any]) -> Dict[str, An
     return combined
 
 
-def combined_assessment_inputs(session_data: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-    dpia_entry = session_data.get("dpia11") or {}
-    gap_entry = session_data.get("gap") or {}
+def combined_assessment_inputs() -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    dpia_entry = get_session_assessment("dpia11") or {}
+    gap_entry = get_session_assessment("gap") or {}
     dpia_answers, dpia_assessment, _ = load_assessment_payload("dpia11", dpia_entry)
     gap_answers, gap_assessment, _ = load_assessment_payload("gap", gap_entry)
     if not dpia_answers or not gap_answers:
@@ -624,6 +715,11 @@ def _conditionally_required(q: Question, answers: Dict[str, Any]) -> bool:
 
 
 def parse_answers(questions: List[Question], form_data: Any) -> Tuple[Dict[str, Any], Dict[str, str], Dict[str, Any]]:
+    """
+    EL: Κάνει parse/validation των input fields και επιστρέφει answers/errors/state.
+    EN: Parses and validates input fields, returning answers/errors/state.
+    """
+
     answers: Dict[str, Any] = {}
     errors: Dict[str, str] = {}
     state: Dict[str, Any] = {}
@@ -688,8 +784,16 @@ def parse_answers(questions: List[Question], form_data: Any) -> Tuple[Dict[str, 
     return answers, errors, state
 
 
-AUTOFILL_NOTE = "Auto-filled for quick demo runs."
 _PARTIAL_KEYWORDS = ("PARTIAL", "IN_PROGRESS", "LIMITED", "SOMETIMES")
+AUTOFILL_TEXT_DEFAULT = "Information available on request."
+AUTOFILL_TEXT_OVERRIDES: Dict[str, str] = {
+    "Q-GAP-026": "Example Organisation Ltd",
+    "Q-GAP-027": "privacy@example.org",
+    "Q-GAP-028": "Example Processor Ltd",
+    "Q-GAP-029": "No international transfers declared.",
+    "Q-DPIA-001A": "Employees and customers.",
+    "Q-DPIA-002": "Service delivery and legal compliance.",
+}
 
 
 def _enum_rank(q: Question) -> Dict[str, int]:
@@ -774,7 +878,7 @@ def _autofill_value(q: Question, variant: str) -> Any:
                 return q.enum[1]
             return q.enum[0]
         return ""
-    return f"{AUTOFILL_NOTE} ({q.id})"
+    return AUTOFILL_TEXT_OVERRIDES.get(q.id, AUTOFILL_TEXT_DEFAULT)
 
 
 def build_autofill_answers(bundle: SchemaBundle, variant: str) -> Dict[str, Any]:
@@ -788,7 +892,12 @@ def build_autofill_answers(bundle: SchemaBundle, variant: str) -> Dict[str, Any]
 
 
 def run_assessment(mode: str, bundle: SchemaBundle, answers: Dict[str, Any]) -> Dict[str, Any]:
-    builder = AssessmentBuilder(bundle, answers, Path("mapping.json"))
+    """
+    EL: Τρέχει το scoring pipeline του επιλεγμένου module (DPIA ή GAP).
+    EN: Runs the scoring pipeline for the selected module (DPIA or GAP).
+    """
+
+    builder = AssessmentBuilder(bundle, answers)
     return builder.build()
 
 
@@ -1042,7 +1151,9 @@ def combined_summary(dpia: Optional[Dict[str, Any]], gap: Optional[Dict[str, Any
         risks.extend(dpia.get("high_risk_indicators") or [])
     if gap:
         risks.extend(gap.get("high_risk_indicators") or [])
-    warnings = list(dict.fromkeys(risks))  # preserve order, dedupe
+    # EL: Χρησιμοποιούμε dict-fromkeys για stable order και deduplication.
+    # EN: Use dict-fromkeys for stable order and deduplication.
+    warnings = list(dict.fromkeys(risks))
     score_values = [value for value in (dpia_percent, gap_percent) if value is not None]
     avg_percent = round(sum(score_values) / len(score_values), 1) if score_values else 0
     return {
@@ -1100,8 +1211,16 @@ def format_value(value: Any) -> str:
 
 @app.route("/")
 def home():
-    completed = session.get("assessments", {})
-    form_state = session.get("form_state", {})
+    if session.pop("form_state", None) is not None:
+        session.modified = True
+    completed = session.get("assessments", {}) or {}
+    runtime_modes = set(_runtime_assessments().keys())
+    stale_modes = [mode for mode in completed.keys() if mode not in runtime_modes]
+    if stale_modes:
+        for mode in stale_modes:
+            completed.pop(mode, None)
+        session["assessments"] = completed
+        session.modified = True
     access = _ensure_access_control()
     accessible_modes = [mode for mode in ASSESSMENT_MODES if access.get(mode)]
     cards = []
@@ -1113,7 +1232,7 @@ def home():
             "done": mode in completed,
             "percent": entry.get("percent"),
             "rating": entry.get("rating"),
-            "action": "Review" if mode in completed else "Start" if not form_state.get(mode) else "Resume",
+            "action": "Review" if mode in completed else "Start",
         }
         cards.append(card)
     remaining = [mode for mode in accessible_modes if mode not in completed]
@@ -1140,19 +1259,12 @@ def assessment_form(mode: str):
     bundle = load_bundle(mode)
     sections = group_by_section(bundle.questions)
     errors: Dict[str, str] = {}
-    stored_state = session.get("form_state", {}).get(mode, {})
-    state: Dict[str, Any] = dict(stored_state)
+    state: Dict[str, Any] = {}
 
     if request.method == "POST":
         answers, errors, state = parse_answers(bundle.questions, request.form)
-        form_state = session.get("form_state", {})
-        form_state[mode] = state
-        session["form_state"] = form_state
-        session.modified = True
         if not errors:
             assessment = run_assessment(mode, bundle, answers)
-            form_state.pop(mode, None)
-            session["form_state"] = form_state
             completed = session.get("assessments", {})
             completed[mode] = save_assessment_files(mode, answers, assessment)
             session["assessments"] = completed
@@ -1194,9 +1306,6 @@ def autofill_assessment(mode: str):
     completed = session.get("assessments", {})
     completed[mode] = entry
     session["assessments"] = completed
-    form_state = session.get("form_state", {})
-    form_state.pop(mode, None)
-    session["form_state"] = form_state
     session.modified = True
     return {
         "redirect": url_for("results"),
@@ -1208,6 +1317,11 @@ def autofill_assessment(mode: str):
 
 @app.route("/results")
 def results():
+    """
+    EL: Κεντρικό analytics view που συνθέτει scores, charts και AI reports.
+    EN: Main analytics view composing scores, charts, and AI reports.
+    """
+
     dpia_entry = get_session_assessment("dpia11")
     gap_entry = get_session_assessment("gap")
     dpia_assessment = None
@@ -1257,35 +1371,17 @@ def results():
     annex_failures = aggregate_annex_failures(failures)
     correlation_matrix = build_correlation_matrix(radar_payload.get("labels", []), radar_payload.get("combined", {}))
     risk_matrix = build_risk_matrix(failures)
-    raw_reports = session.get("module_reports", {}) or {}
+    raw_reports = _runtime_module_reports()
     prepared_reports: Dict[str, Dict[str, Any]] = {}
-    reports_updated = False
     for report_mode, meta in list(raw_reports.items()):
         text = load_module_report_text(meta)
         if not text:
-            legacy_text = meta.get("text")
-            if legacy_text:
-                run_id = meta.get("run_id") or datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
-                path = save_module_report_file(report_mode, run_id, legacy_text)
-                meta = {
-                    key: value
-                    for key, value in meta.items()
-                    if key not in {"text", "html"}
-                }
-                meta["path"] = path
-                raw_reports[report_mode] = meta
-                text = legacy_text
-                reports_updated = True
-            else:
-                continue
+            continue
         prepared_reports[report_mode] = {
             **meta,
             "text": text,
             "html": markdown_to_html(text),
         }
-    if reports_updated:
-        session["module_reports"] = raw_reports
-        session.modified = True
     return render_template(
         "results.html",
         dpia=dpia_assessment,
@@ -1387,7 +1483,7 @@ def export_assessment(mode: str):
 def download_module_report(mode: str, fmt: str):
     if mode not in ASSESSMENT_MODES:
         abort(404)
-    reports = session.get("module_reports", {})
+    reports = _runtime_module_reports()
     report = reports.get(mode)
     if not report:
         flash("Generate the AI report before downloading.", "error")
@@ -1421,25 +1517,72 @@ def download_module_report(mode: str, fmt: str):
             download_name=f"{mode}-llm-report.pdf",
             mimetype="application/pdf",
         )
+    if fmt == "docx":
+        label = SCHEMA_CHOICES[mode]["label"]
+        subtitle = f"Run {report['run_id']} · {report['generated_at']}"
+        try:
+            docx_bytes = markdown_to_docx_bytes(
+                text,
+                f"{label} compliance narrative",
+                subtitle,
+            )
+        except RuntimeError as exc:
+            flash(f"DOCX export unavailable: {exc}", "error")
+            return redirect(url_for("results"))
+        return send_file(
+            io.BytesIO(docx_bytes),
+            as_attachment=True,
+            download_name=f"{mode}-llm-report.docx",
+            mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        )
     abort(404)
 
 
 @app.route("/official-policy", methods=["GET", "POST"])
 def official_policy_page():
+    """
+    EL: Orchestrates τη σύνθεση της official policy από DPIA/GAP/cookie inputs.
+    EN: Orchestrates official policy composition from DPIA/GAP/cookie inputs.
+    """
+
     error = None
-    policy_meta = load_official_policy(session.get("official_policy_run"))
+    policy_meta = load_runtime_official_policy(session.get("official_policy_run"))
     company_profile = session.get("company_profile", {})
     policy_overrides = session.get("policy_overrides", {})
     if request.method == "POST":
         overrides = session.get("policy_overrides", {})
         try:
-            answers, assessment = combined_assessment_inputs(session.get("assessments", {}))
+            answers, assessment = combined_assessment_inputs()
             if session.get("cookie_audit_include"):
                 audit_summary = summarize_cookie_audit(session.get("cookie_audit"))
                 if audit_summary:
                     assessment["cookie_audit"] = audit_summary
-            result = create_official_policy(answers, assessment, overrides)
-        except RuntimeError as exc:
+            context, sections, markdown_text, context_hash = generate_official_policy_sections(answers, assessment, overrides)
+            run_id = _new_run_id()
+            policy_number = f"GDP-{run_id}"
+            signature = hash_text(markdown_text + policy_number)
+            html_body = markdown_to_html(markdown_text)
+            pdf_bytes = markdown_to_pdf_bytes(markdown_text, policy_number, signature)
+            result = {
+                "run_id": run_id,
+                "generated_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+                "context_hash": context_hash,
+                "model": MODEL_NAME,
+                "sections": sections,
+                "policy_number": policy_number,
+                "signature": signature,
+                "markdown": markdown_text,
+                "html": html_body,
+                "pdf_bytes": pdf_bytes,
+                "context": context,
+                "overrides": overrides or {},
+                "paths": {"pdf": "memory://pdf", "html": "memory://html", "markdown": "memory://markdown"},
+            }
+            bucket = _runtime_bucket(create=True)
+            bucket["official_policies"][run_id] = result
+            bucket["official_policy_current"] = run_id
+        except (RuntimeError, ValueError, FileNotFoundError) as exc:
+            logger.exception("Official policy generation failed.")
             error = str(exc)
         else:
             session["official_policy_run"] = result["run_id"]
@@ -1459,31 +1602,51 @@ def official_policy_page():
 @app.route("/official-policy/download/<run_id>")
 def download_official_policy(run_id: str):
     fmt = (request.args.get("fmt") or "pdf").lower()
-    metadata = load_official_policy(run_id)
+    metadata = load_runtime_official_policy(run_id)
     if not metadata:
         abort(404)
-    paths = metadata.get("paths") or {}
     if fmt == "pdf":
-        pdf_path = paths.get("pdf")
-        if not pdf_path:
+        pdf_bytes = metadata.get("pdf_bytes")
+        if not isinstance(pdf_bytes, (bytes, bytearray)):
             fmt = "md"
         else:
             return send_file(
-                pdf_path,
+                io.BytesIO(bytes(pdf_bytes)),
                 as_attachment=True,
                 download_name=f"official-gdpr-policy-{run_id}.pdf",
                 mimetype="application/pdf",
             )
     if fmt == "html":
-        html_path = paths.get("html")
-        if html_path and Path(html_path).exists():
+        html_text = metadata.get("html")
+        if isinstance(html_text, str):
             return send_file(
-                html_path,
+                io.BytesIO(html_text.encode("utf-8")),
                 as_attachment=True,
                 download_name=f"official-gdpr-policy-{run_id}.html",
                 mimetype="text/html",
             )
         fmt = "md"
+    if fmt == "docx":
+        markdown_text = metadata.get("markdown", "")
+        if not isinstance(markdown_text, str) or not markdown_text.strip():
+            flash("DOCX export unavailable because policy markdown is missing.", "error")
+            return redirect(url_for("official_policy_page"))
+        subtitle = f"Policy {metadata.get('policy_number', run_id)} · {metadata.get('generated_at', '')}"
+        try:
+            docx_bytes = markdown_to_docx_bytes(
+                markdown_text,
+                "Official GDPR Compliance Policy",
+                subtitle,
+            )
+        except RuntimeError as exc:
+            flash(f"DOCX export unavailable: {exc}", "error")
+            return redirect(url_for("official_policy_page"))
+        return send_file(
+            io.BytesIO(docx_bytes),
+            as_attachment=True,
+            download_name=f"official-gdpr-policy-{run_id}.docx",
+            mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        )
     if fmt in {"md", "markdown"}:
         text = metadata.get("markdown", "")
         return send_file(
@@ -1527,6 +1690,11 @@ def update_company_profile():
 
 @app.route("/module-report/<mode>", methods=["POST"])
 def create_module_report(mode: str):
+    """
+    EL: Δημιουργεί LLM narrative report για το επιλεγμένο assessment mode.
+    EN: Generates an LLM narrative report for the selected assessment mode.
+    """
+
     if mode not in ASSESSMENT_MODES:
         abort(404)
     entry = get_session_assessment(mode)
@@ -1551,19 +1719,17 @@ def create_module_report(mode: str):
     try:
         result = generate_module_report(mode, context)
     except (RuntimeError, ValueError, FileNotFoundError) as exc:
+        logger.exception("Module report generation failed for mode '%s'.", mode)
         flash(f"Failed to generate {SCHEMA_CHOICES[mode]['label']} report: {exc}", "error")
         return redirect(url_for("results"))
-    reports = session.get("module_reports", {})
-    path = save_module_report_file(mode, result["run_id"], result["text"])
+    reports = _runtime_module_reports()
     reports[mode] = {
         "mode": mode,
         "label": SCHEMA_CHOICES[mode]["label"],
         "run_id": result["run_id"],
         "generated_at": result["generated_at"],
-        "path": path,
+        "text": result["text"],
     }
-    session["module_reports"] = reports
-    session.modified = True
     flash(f"{SCHEMA_CHOICES[mode]['label']} report generated.", "info")
     return redirect(url_for("results") + f"#module-report-{mode}")
 
@@ -1583,6 +1749,7 @@ def update_access_control():
 
 @app.route("/reset", methods=["POST"])
 def reset_progress():
+    _drop_runtime_bucket()
     session.clear()
     return redirect(url_for("home"))
 

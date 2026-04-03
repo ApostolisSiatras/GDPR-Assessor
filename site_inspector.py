@@ -1,3 +1,14 @@
+"""
+EL: Lightweight website probe για cookie/breach context enrichment.
+EN: Lightweight website probe for cookie and context enrichment.
+
+EL: Χρησιμοποιείται από το policy context layer για να συμπληρώνει
+στοιχεία website reachability/cookie presence όταν υπάρχει domain input.
+
+EN: Used by the policy context layer to enrich website reachability and
+cookie presence when a domain is provided.
+"""
+
 from __future__ import annotations
 
 import re
@@ -12,10 +23,16 @@ DEFAULT_HEADERS = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 }
 MAX_HTML_SCAN = 8000
+REQUEST_TIMEOUT_SECONDS = 6
 
 
 @dataclass
 class InspectionResult:
+    """
+    EL: Δομημένο αποτέλεσμα website probe που serializes σε dict για templates/LLM.
+    EN: Structured website probe output serialized to dict for templates/LLM.
+    """
+
     url: Optional[str]
     reachable: bool
     status_code: Optional[int]
@@ -55,13 +72,20 @@ def _normalize_url(raw_url: str) -> str:
 
 
 def inspect_website(raw_url: Optional[str]) -> Dict[str, Any]:
+    """
+    EL: Εκτελεί γρήγορο probe URL και επιστρέφει cookie/banner evidence.
+    EN: Performs a quick URL probe and returns cookie/banner evidence.
+    """
+
     if not raw_url:
         return _no_site("no_website").as_dict()
+
     url = _normalize_url(raw_url)
     if not url:
         return _no_site("no_website").as_dict()
+
     try:
-        response = requests.get(url, headers=DEFAULT_HEADERS, timeout=6)
+        response = requests.get(url, headers=DEFAULT_HEADERS, timeout=REQUEST_TIMEOUT_SECONDS)
     except requests.RequestException:
         return InspectionResult(
             url=url,
@@ -70,6 +94,7 @@ def inspect_website(raw_url: Optional[str]) -> Dict[str, Any]:
             cookies={"enabled": False, "details": [], "reason": "unreachable"},
             banner_detected=False,
         ).as_dict()
+
     cookie_details = []
     for cookie in response.cookies:
         rest = getattr(cookie, "_rest", {}) or {}
@@ -82,9 +107,11 @@ def inspect_website(raw_url: Optional[str]) -> Dict[str, Any]:
                 "expires": cookie.expires,
             }
         )
+
     enabled = bool(cookie_details)
     snippet = (response.text or "")[:MAX_HTML_SCAN]
     banner_detected = bool(re.search(r"cookie", snippet, re.IGNORECASE))
+
     cookies_payload = {
         "enabled": enabled,
         "details": cookie_details,
@@ -93,6 +120,7 @@ def inspect_website(raw_url: Optional[str]) -> Dict[str, Any]:
     }
     if not enabled and not banner_detected:
         cookies_payload["reason"] = "no_evidence"
+
     return InspectionResult(
         url=response.url or url,
         reachable=True,

@@ -1,7 +1,18 @@
+"""
+EL: Context normalization layer για prompts και policy generation.
+EN: Context normalization layer for prompts and policy generation.
+
+EL: Συγχωνεύει answers, assessment outputs και website inspection data
+σε ένα ενιαίο object που καταναλώνει το LLM prompt layer.
+
+EN: Merges answers, assessment outputs, and website inspection data
+into a single object consumed by the LLM prompt layer.
+"""
+
 from __future__ import annotations
 
 import re
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from site_inspector import inspect_website
 
@@ -16,6 +27,33 @@ def _listify(value: Any) -> List[Any]:
     return [value]
 
 
+_DEMO_TEXT_RE = re.compile(r"auto-filled for quick demo runs", re.IGNORECASE)
+_QUESTION_ID_RE = re.compile(r"\bQ-[A-Z]+-\d+\b")
+_BRACKET_PLACEHOLDER_RE = re.compile(r"^\[[^\]\n]{2,}\]$")
+
+
+def _is_placeholder_text(value: Any) -> bool:
+    if not isinstance(value, str):
+        return False
+    text = value.strip()
+    if not text:
+        return False
+    return bool(
+        _DEMO_TEXT_RE.search(text)
+        or _QUESTION_ID_RE.search(text)
+        or _BRACKET_PLACEHOLDER_RE.match(text)
+    )
+
+
+def _clean_text(value: Any) -> Optional[str]:
+    if value is None:
+        return None
+    text = str(value).strip()
+    if not text or _is_placeholder_text(text):
+        return None
+    return text
+
+
 def _sanitize_value(value: Any) -> str:
     if value is None:
         return ""
@@ -24,6 +62,8 @@ def _sanitize_value(value: Any) -> str:
     if isinstance(value, (list, tuple, set)):
         return ", ".join(_sanitize_value(item) for item in value)
     text = str(value).strip()
+    if _is_placeholder_text(text):
+        return ""
     text = re.sub(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", "[redacted email]", text)
     return text[:200]
 
@@ -32,6 +72,8 @@ def _answer_by_hint(answers: Dict[str, Any], hints: List[str]) -> Any:
     for key, value in answers.items():
         upper_key = key.upper()
         if any(hint in upper_key for hint in hints):
+            if _is_placeholder_text(value):
+                continue
             return value
     return None
 
@@ -49,10 +91,6 @@ def _humanize_token(value: Any) -> str:
     return text
 
 
-def _humanize_list(items: List[Any]) -> List[str]:
-    return [_humanize_token(item) for item in items if isinstance(item, str) and str(item).strip()]
-
-
 def _humanize_value(value: Any) -> Any:
     if isinstance(value, str):
         return _humanize_token(value)
@@ -67,11 +105,18 @@ def _split_values(raw: Any) -> List[str]:
     if not raw:
         return []
     if isinstance(raw, list):
-        return [str(item).strip() for item in raw if str(item).strip()]
-    return [part.strip() for part in re.split(r"[,\n]", str(raw)) if part.strip()]
+        values = [str(item).strip() for item in raw if str(item).strip()]
+    else:
+        values = [part.strip() for part in re.split(r"[,\n]", str(raw)) if part.strip()]
+    return [value for value in values if not _is_placeholder_text(value)]
 
 
 def build_llm_context(answers: Dict[str, Any], assessment: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    EL: Χτίζει canonical context payload για module reports και official policy.
+    EN: Builds canonical context payload for module reports and official policy.
+    """
+
     answers = answers or {}
     assessment = assessment or {}
     question_context = {
@@ -86,32 +131,40 @@ def build_llm_context(answers: Dict[str, Any], assessment: Dict[str, Any]) -> Di
     inspection = inspect_website(website_value if isinstance(website_value, str) else None)
 
     profile = assessment.get("org_profile") or answers.get("company_profile") or {}
-    q_org_name = answers.get("Q-GAP-026")
-    q_contact = answers.get("Q-GAP-027")
+    q_org_name = _clean_text(answers.get("Q-GAP-026"))
+    q_contact = _clean_text(answers.get("Q-GAP-027"))
     q_processors = _split_values(answers.get("Q-GAP-028"))
     q_transfers = _split_values(answers.get("Q-GAP-029"))
 
-    org_name = profile.get("org_name") or q_org_name or _answer_by_hint(answers, ["ORG", "COMPANY", "ENTITY"]) or "Redacted Organisation"
-    org_sector = profile.get("sector") or _answer_by_hint(answers, ["SECTOR", "INDUSTRY"]) or "Not provided"
-    org_country = profile.get("country") or _answer_by_hint(answers, ["COUNTRY", "LOCATION"]) or "Not specified"
-    dpo_raw = profile.get("dpo_name") or _answer_by_hint(answers, ["DPO", "DATA_PROTECTION_OFFICER"]) or answers.get("Q-GAP-001")
-    if isinstance(dpo_raw, str):
-        dpo_value = "Appointed" if dpo_raw.upper() in {"YES", "APPOINTED"} else "Not appointed"
+    org_name = (
+        _clean_text(profile.get("org_name"))
+        or q_org_name
+        or _clean_text(_answer_by_hint(answers, ["ORG", "COMPANY", "ENTITY"]))
+        or "Information available on request."
+    )
+    org_sector = _clean_text(profile.get("sector")) or _clean_text(_answer_by_hint(answers, ["SECTOR", "INDUSTRY"])) or "Not provided"
+    org_country = _clean_text(profile.get("country")) or _clean_text(_answer_by_hint(answers, ["COUNTRY", "LOCATION"])) or "Not specified"
+    dpo_name = _clean_text(profile.get("dpo_name")) or _clean_text(_answer_by_hint(answers, ["DPO", "DATA_PROTECTION_OFFICER"]))
+    dpo_status = _clean_text(answers.get("Q-GAP-001"))
+    if dpo_name:
+        dpo_value = dpo_name
+    elif isinstance(dpo_status, str) and dpo_status.upper() in {"YES", "APPOINTED", "TRUE"}:
+        dpo_value = "Appointed"
     else:
         dpo_value = "Not appointed"
     contact_parts = []
-    contact_email = profile.get("email") or q_contact
-    contact_phone = profile.get("phone")
+    contact_email = _clean_text(profile.get("email")) or q_contact
+    contact_phone = _clean_text(profile.get("phone"))
     if contact_email:
         contact_parts.append(f"Email: {contact_email}")
     if contact_phone:
         contact_parts.append(f"Phone: {contact_phone}")
-    contact_value = "; ".join(contact_parts) if contact_parts else "Data protection contact available upon request."
+    contact_value = "; ".join(contact_parts) if contact_parts else "Information available on request."
     org = {
-        "name": _sanitize_value(org_name) or "Redacted Organisation",
+        "name": _sanitize_value(org_name) or "Information available on request.",
         "sector": _sanitize_value(org_sector) or "Not provided",
         "establishment_country": _sanitize_value(org_country) or "Not specified",
-        "dpo": _sanitize_value(dpo_raw or dpo_value) or dpo_value,
+        "dpo": _sanitize_value(dpo_value) or dpo_value,
         "contact": contact_value,
         "website": inspection.get("url") or _sanitize_value(website_value) or None,
     }

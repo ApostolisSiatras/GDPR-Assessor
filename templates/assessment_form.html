@@ -70,7 +70,7 @@
       </button>
     {% endfor %}
   </div>
-  <form method="post">
+  <form method="post" autocomplete="off">
     {% for section, questions in sections %}
       <section id="section-{{ loop.index }}" class="assessment-section" style="margin-bottom:2rem;">
         <h3 class="section-title" style="display:flex; justify-content:space-between; align-items:center; gap:1rem;">
@@ -134,14 +134,14 @@
                 {% endfor %}
               </div>
             {% elif q.qtype in ["enum", "scale"] %}
-              <select name="{{ field_id }}" id="{{ field_id }}">
+              <select name="{{ field_id }}" id="{{ field_id }}" autocomplete="off">
                 <option value="">-- select --</option>
                 {% for opt in enum_opts %}
                   <option value="{{ opt }}" {% if state.get(q.id) == opt %}selected{% endif %}>{{ opt }}</option>
                 {% endfor %}
               </select>
             {% elif q.qtype == "integer" %}
-              <input type="number" name="{{ field_id }}" id="{{ field_id }}" value="{{ state.get(q.id, '') }}" />
+              <input type="number" name="{{ field_id }}" id="{{ field_id }}" value="{{ state.get(q.id, '') }}" autocomplete="off" />
             {% elif q.qtype == "multiselect" %}
               <div class="checkbox-grid">
                 {% for opt in q.enum %}
@@ -152,14 +152,14 @@
                 {% endfor %}
               </div>
             {% else %}
-              <input type="text" name="{{ field_id }}" id="{{ field_id }}" value="{{ state.get(q.id, '') }}" />
+              <input type="text" name="{{ field_id }}" id="{{ field_id }}" value="{{ state.get(q.id, '') }}" autocomplete="off" />
             {% endif %}
             </div>
           </div>
           {% set existing_context = state.get('context_' ~ q.id, '') %}
           <div class="question-notes question-context" data-context-for="{{ field_id }}" style="{% if state.get(q.id) or existing_context %}display:block;{% else %}display:none;{% endif %}">
             <label for="context_{{ q.id }}" style="font-weight:500; color:#101828;">Implementation notes (optional)</label>
-            <textarea name="context_{{ q.id }}" id="context_{{ q.id }}" rows="3" placeholder="Add context once you choose an answer (e.g., processors involved, evidence references).">{{ existing_context }}</textarea>
+            <textarea name="context_{{ q.id }}" id="context_{{ q.id }}" rows="3" placeholder="Add context once you choose an answer (e.g., processors involved, evidence references)." autocomplete="off">{{ existing_context }}</textarea>
           </div>
           {% if errors.get(q.id) %}
             <div class="error">{{ errors[q.id] }}</div>

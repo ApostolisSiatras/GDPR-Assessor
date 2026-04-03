@@ -5,7 +5,7 @@
     <div class="flex-between">
       <div>
         <h1>Official GDPR policy</h1>
-        <p>Consolidates DPIA + GAP intelligence into a board-ready policy with Markdown and PDF exports.</p>
+        <p>Consolidates DPIA + GAP intelligence into a board-ready policy with DOCX, Markdown, and PDF exports.</p>
       </div>
       <a class="btn btn-secondary" href="{{ url_for('results') }}">Back to analytics</a>
     </div>
@@ -17,7 +17,7 @@
         <p style="color:#B42318;">Complete both DPIA and GAP assessments before generating the official policy.</p>
       {% else %}
         <p>Generate a refreshed policy using the latest assessments, company profile, and section feedback.</p>
-        <form method="post">
+        <form method="post" autocomplete="off">
           <button class="btn" type="submit" data-loading="true" data-loading-text="Generating policy…">Generate / Refresh Policy</button>
         </form>
       {% endif %}
@@ -38,6 +38,7 @@
         </p>
         <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
           <a class="btn" href="{{ url_for('download_official_policy', run_id=policy.run_id) }}">Download PDF</a>
+          <a class="btn btn-secondary" href="{{ url_for('download_official_policy', run_id=policy.run_id, fmt='docx') }}">Download DOCX</a>
           <a class="btn btn-secondary" href="{{ url_for('download_official_policy', run_id=policy.run_id, fmt='html') }}">Download HTML</a>
           <a class="btn btn-secondary" href="{{ url_for('download_official_policy', run_id=policy.run_id, fmt='md') }}">Download Markdown</a>
         </div>
@@ -49,41 +50,41 @@
   {% if assessments_ready %}
     <div class="panel" style="margin-top:1.5rem;">
       <h3>Organisation profile</h3>
-      <form method="post" action="{{ url_for('update_company_profile') }}">
+      <form method="post" action="{{ url_for('update_company_profile') }}" autocomplete="off">
         <div class="form-grid">
           <div class="field-group">
             <label for="org_name">Company / organisation name</label>
-            <input type="text" id="org_name" name="org_name" value="{{ company_profile.org_name or '' }}" placeholder="e.g. Acme Holdings Ltd" />
+            <input type="text" id="org_name" name="org_name" value="{{ company_profile.org_name or '' }}" placeholder="e.g. Acme Holdings Ltd" autocomplete="off" />
           </div>
           <div class="field-group">
             <label for="sector">Industry / sector</label>
-            <input type="text" id="sector" name="sector" value="{{ company_profile.sector or '' }}" placeholder="e.g. SaaS / HR Tech" />
+            <input type="text" id="sector" name="sector" value="{{ company_profile.sector or '' }}" placeholder="e.g. SaaS / HR Tech" autocomplete="off" />
           </div>
           <div class="field-group">
             <label for="country">Establishment country</label>
-            <input type="text" id="country" name="country" value="{{ company_profile.country or '' }}" placeholder="e.g. Ireland" />
+            <input type="text" id="country" name="country" value="{{ company_profile.country or '' }}" placeholder="e.g. Ireland" autocomplete="off" />
           </div>
           <div class="field-group">
             <label for="dpo_name">DPO / representative</label>
-            <input type="text" id="dpo_name" name="dpo_name" value="{{ company_profile.dpo_name or '' }}" placeholder="e.g. Jane Doe" />
+            <input type="text" id="dpo_name" name="dpo_name" value="{{ company_profile.dpo_name or '' }}" placeholder="e.g. Jane Doe" autocomplete="off" />
           </div>
           <div class="field-group">
             <label for="email">Contact email</label>
-            <input type="email" id="email" name="email" value="{{ company_profile.email or '' }}" placeholder="privacy@example.com" />
+            <input type="email" id="email" name="email" value="{{ company_profile.email or '' }}" placeholder="privacy@example.com" autocomplete="off" />
           </div>
           <div class="field-group">
             <label for="phone">Contact phone</label>
-            <input type="text" id="phone" name="phone" value="{{ company_profile.phone or '' }}" placeholder="+44 20 1234 5678" />
+            <input type="text" id="phone" name="phone" value="{{ company_profile.phone or '' }}" placeholder="+44 20 1234 5678" autocomplete="off" />
           </div>
           <div class="field-group" style="grid-column:1 / -1;">
             <label for="processors">Key processors (one per line)</label>
             <textarea id="processors" name="processors" rows="3" placeholder="Vendor A — payroll processing
-Vendor B — secure hosting">{{ company_profile.processors|join('\n') if company_profile.processors else '' }}</textarea>
+Vendor B — secure hosting" autocomplete="off">{{ company_profile.processors|join('\n') if company_profile.processors else '' }}</textarea>
           </div>
           <div class="field-group" style="grid-column:1 / -1;">
             <label for="transfers">International transfers / safeguards (one per line)</label>
             <textarea id="transfers" name="transfers" rows="3" placeholder="HR data to US via SCCs
-Analytics data to SG under BCRs">{{ company_profile.transfers|join('\n') if company_profile.transfers else '' }}</textarea>
+Analytics data to SG under BCRs" autocomplete="off">{{ company_profile.transfers|join('\n') if company_profile.transfers else '' }}</textarea>
           </div>
         </div>
         <button class="btn btn-secondary" type="submit" style="margin-top:1rem;">Save profile</button>
@@ -91,12 +92,12 @@ Analytics data to SG under BCRs">{{ company_profile.transfers|join('\n') if comp
     </div>
     <div class="panel" style="margin-top:1.5rem;">
       <h3>Section feedback</h3>
-      <form method="post" action="{{ url_for('update_policy_overrides') }}">
+      <form method="post" action="{{ url_for('update_policy_overrides') }}" autocomplete="off">
         <div class="form-grid">
           {% for slug, spec in sections_meta.items() %}
             <div class="field-group" style="grid-column:1 / -1;">
               <label for="override_{{ slug }}">{{ spec.title }} feedback</label>
-              <textarea id="override_{{ slug }}" name="override_{{ slug }}" rows="3" placeholder="Add context or edits for this section">{{ policy_overrides.get(slug, '') }}</textarea>
+              <textarea id="override_{{ slug }}" name="override_{{ slug }}" rows="3" placeholder="Add context or edits for this section" autocomplete="off">{{ policy_overrides.get(slug, '') }}</textarea>
             </div>
           {% endfor %}
         </div>
@@ -115,6 +116,7 @@ Analytics data to SG under BCRs">{{ company_profile.transfers|join('\n') if comp
           {% if policy.paths.pdf %}
             <a class="btn" href="{{ url_for('download_official_policy', run_id=policy.run_id) }}">PDF</a>
           {% endif %}
+          <a class="btn btn-secondary" href="{{ url_for('download_official_policy', run_id=policy.run_id, fmt='docx') }}">DOCX</a>
           <a class="btn btn-secondary" href="{{ url_for('download_official_policy', run_id=policy.run_id, fmt='html') }}">HTML</a>
           <a class="btn btn-secondary" href="{{ url_for('download_official_policy', run_id=policy.run_id, fmt='md') }}">Markdown</a>
         </div>

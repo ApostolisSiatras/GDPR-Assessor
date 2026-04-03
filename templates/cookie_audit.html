@@ -36,6 +36,10 @@
   {% if audit %}
     {% set technical = audit.technical | default({}) %}
     {% set metadata = audit.page_metadata | default({}) %}
+    {% set resources = audit.resource_inventory | default({}) %}
+    {% set consent_ui = audit.consent_ui | default({}) %}
+    {% set storage = audit.storage_signals | default({}) %}
+    {% set policy_page = audit.policy_page_analysis | default({}) %}
     {% for cookie in audit.cookies %}
       {% set cat = (cookie.category or 'unclassified') %}
       {% set current = category_counts.data.get(cat, 0) + 1 %}
@@ -137,6 +141,12 @@
         {% if audit.banner_detected and metadata.banner_context %}
           <p class="text-muted" style="font-size:0.9rem;">{{ metadata.banner_context }}</p>
         {% endif %}
+        <p class="text-muted">
+          Accept action: {% if consent_ui.accept_action %}Yes{% else %}No{% endif %} ·
+          Reject action: {% if consent_ui.reject_action %}Yes{% else %}No{% endif %} ·
+          Settings action: {% if consent_ui.settings_action %}Yes{% else %}No{% endif %}<br />
+          Granular consent choices: {% if consent_ui.granular_choices %}Detected{% else %}Not clear{% endif %}
+        </p>
         <strong>Consent platforms</strong>
         <ul class="pill-list">
           {% if audit.consent_signals %}
@@ -165,6 +175,14 @@
           Language: {{ metadata.language or 'Not declared' }}<br />
           Scripts: {{ metadata.script_count | default(0) }} · Forms: {{ metadata.form_count | default(0) }} · Links: {{ metadata.link_count | default(0) }}
         </p>
+        <strong>Storage behavior signals</strong>
+        <ul class="pill-list">
+          <li>document.cookie read: {% if storage.document_cookie_read %}Yes{% else %}No{% endif %}</li>
+          <li>document.cookie write: {% if storage.document_cookie_write %}Yes{% else %}No{% endif %}</li>
+          <li>localStorage usage: {% if storage.local_storage %}Yes{% else %}No{% endif %}</li>
+          <li>sessionStorage usage: {% if storage.session_storage %}Yes{% else %}No{% endif %}</li>
+          <li>IndexedDB usage: {% if storage.indexed_db %}Yes{% else %}No{% endif %}</li>
+        </ul>
         <strong>Third-party script hosts</strong>
         <ul class="pill-list">
           {% if metadata.third_party_script_hosts %}
@@ -182,6 +200,18 @@
       <div class="flex-between" style="align-items:flex-start;">
         <div>
           <h4>Cookie policy links <span class="info-icon" data-info="Links detected on the landing page that mention cookies/policy/notice.">i</span></h4>
+          {% if policy_page.checked %}
+            <p class="text-muted" style="margin-top:0.35rem;">
+              Policy page checked: <a href="{{ policy_page.url }}" target="_blank" rel="noopener noreferrer">{{ policy_page.url }}</a> ({{ policy_page.status_code }})
+            </p>
+            <p class="text-muted" style="font-size:0.9rem;">
+              Coverage:
+              categories {% if policy_page.coverage.categories %}yes{% else %}no{% endif %},
+              retention {% if policy_page.coverage.retention %}yes{% else %}no{% endif %},
+              withdrawal {% if policy_page.coverage.withdrawal %}yes{% else %}no{% endif %},
+              contact {% if policy_page.coverage.contact %}yes{% else %}no{% endif %}
+            </p>
+          {% endif %}
           {% if audit.policy_links %}
             <ul class="pill-list">
               {% for link in audit.policy_links %}
@@ -205,6 +235,23 @@
         </form>
       </div>
       <div class="grid">
+        <div>
+          <h4>Resource inventory</h4>
+          <p class="text-muted">
+            External hosts observed: {{ resources.third_party_hosts | default([]) | length }}<br />
+            Set-Cookie headers: {{ resources.set_cookie_header_count | default(0) }} · Parsed cookies: {{ resources.cookie_jar_count | default(0) }}<br />
+            Header/cookie mismatch: {% if resources.set_cookie_mismatch %}Yes{% else %}No{% endif %}
+          </p>
+          <ul class="pill-list">
+            {% if resources.third_party_hosts %}
+              {% for host in resources.third_party_hosts[:8] %}
+                <li>{{ host }}</li>
+              {% endfor %}
+            {% else %}
+              <li>No external resource hosts detected</li>
+            {% endif %}
+          </ul>
+        </div>
         <div>
           <h4>Cookie categories</h4>
           {% if category_counts.data %}
