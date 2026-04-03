@@ -1,0 +1,30 @@
+# EL: Python cache artifacts που δεν πρέπει να γίνονται tracked.
+# EN: Python cache artifacts that should never be tracked.
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# EL: Test/runtime local caches.
+# EN: Test/runtime local caches.
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# EL: Local virtual environments.
+# EN: Local virtual environments.
+.venv/
+venv/
+env/
+
+# EL: Local OS/editor noise.
+# EN: Local OS/editor noise.
+.DS_Store
+.idea/
+.vscode/
+
+# EL: Generated application output artefacts.
+# EN: Generated application output artifacts.
+output/
+reports/
+diffs/
