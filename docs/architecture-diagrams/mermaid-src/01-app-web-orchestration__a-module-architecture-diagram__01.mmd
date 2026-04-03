@@ -1,0 +1,56 @@
+flowchart LR
+  subgraph UI["UI Templates"]
+    TLogin["login.html"]
+    THome["home.html"]
+    TAssess["assessment_form.html"]
+    TResults["results.html"]
+    TCookie["cookie_audit.html"]
+    TPolicy["official_policy.html"]
+  end
+
+  subgraph Routes["Flask Routes in app.py"]
+    RLogin["login/logout"]
+    RHome["home"]
+    RAssess["assessment_form(mode)"]
+    RAuto["autofill_assessment(mode)"]
+    RResults["results"]
+    RCookie["cookie_audit_view/toggle_cookie_audit"]
+    RReports["create_module_report/download_module_report/export_assessment"]
+    RPolicy["official_policy_page/download_official_policy/profile/comments"]
+  end
+
+  subgraph Helpers["Core Helpers"]
+    HParse["parse_answers"]
+    HRun["run_assessment"]
+    HSave["save_assessment_files"]
+    HLoad["get_session_assessment/load_assessment_payload"]
+    HCharts["build_radar_payload/build_risk_matrix/build_correlation_matrix/etc"]
+    HMerge["combined_assessment_inputs/merge_assessments"]
+  end
+
+  subgraph State["Runtime State"]
+    SSession["Flask session"]
+    SRuntime["RuntimeSessionStore bucket"]
+  end
+
+  subgraph Services["Imported Services"]
+    GEngine["gdpr_wizard.AssessmentBuilder"]
+    CEngine["cookie_audit.run_cookie_audit"]
+    PContext["policy_engine.build_llm_context"]
+    PModule["policy_engine.generate_module_report"]
+    POfficial["policy_engine.generate_official_policy_sections"]
+    Render["markdown_to_html/pdf/docx + send_file"]
+  end
+
+  UI --> Routes
+  RAssess --> HParse --> HRun --> GEngine
+  HRun --> HSave --> SRuntime
+  HSave --> SSession
+  RResults --> HLoad --> SRuntime
+  RResults --> HCharts
+  RCookie --> CEngine
+  RReports --> PContext --> PModule
+  RPolicy --> HMerge --> POfficial
+  RReports --> Render
+  RPolicy --> Render
+  Routes --> UI

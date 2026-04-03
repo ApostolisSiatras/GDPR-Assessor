@@ -1,0 +1,31 @@
+flowchart LR
+  L[layout.html] --> H[home.html]
+  L --> A[assessment_form.html]
+  L --> R[results.html]
+  L --> C[cookie_audit.html]
+  L --> P[official_policy.html]
+  L --> LG[login.html]
+  L --> RA[report_access.html]
+
+  H --> E1[POST /access-control]
+  H --> E2[POST /reset]
+  H --> E3[GET /assessment/<mode>]
+
+  A --> E4[POST /assessment/<mode>]
+  A --> E5[fetch POST /assessment/<mode>/autofill]
+
+  R --> E6[POST /module-report/<mode>]
+  R --> E7[GET /module-report/<mode>/download.<fmt>]
+  R --> E8[POST /cookie-audit/include]
+  R --> E9[GET /reports/<mode>/export]
+
+  C --> E10[POST /cookie-audit]
+  C --> E11[POST /cookie-audit/include]
+
+  P --> E12[POST /official-policy]
+  P --> E13[POST /official-policy/profile]
+  P --> E14[POST /official-policy/comments]
+  P --> E15[GET /official-policy/download/<run_id>]
+
+  LG --> E16[POST /login]
+  RA --> E17[POST /report-access]

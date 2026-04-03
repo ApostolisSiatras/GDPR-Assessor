@@ -1,0 +1,23 @@
+# Cross-Module End-to-End Overview
+
+```mermaid
+flowchart TD
+  U[User] --> UI[Templates]
+  UI --> APP[app.py routes]
+
+  APP --> SCORE[gdpr_wizard.AssessmentBuilder.build]
+  APP --> COOKIE[cookie_audit.run_cookie_audit -> _audit_score/_compliance_gaps]
+  APP --> CTX[policy_engine.build_llm_context + site_inspector.inspect_website]
+  APP --> LLM[generate_module_report / generate_official_policy_sections -> run_ollama]
+  APP --> RENDER[markdown_to_html/pdf/docx]
+
+  SCORE --> STORE[RuntimeSessionStore + Flask session]
+  COOKIE --> STORE
+  LLM --> STORE
+
+  STORE --> ANALYTICS[results analytics composition\nradar/correlation/risk/annex]
+  ANALYTICS --> UI
+
+  RENDER --> DL[Download endpoints]
+  DL --> U
+```

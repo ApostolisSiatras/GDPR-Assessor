@@ -1,0 +1,8 @@
+flowchart LR
+  E1[OS env vars] --> D1[typed config objects]
+  D1 --> D2[app/policy runtime constants]
+
+  X1[ctx + markdown] --> V1[validate_cookie_policy/validate_transfers]
+  X2[schema + payload] --> V2[validate_json]
+  V1 --> O1[list of errors]
+  V2 --> O1

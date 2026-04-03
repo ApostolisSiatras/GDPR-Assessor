@@ -1,0 +1,18 @@
+flowchart LR
+  FSess["Flask session"] --> SID["runtime_session_id"]
+  SID --> RS["RuntimeSessionStore._store(sid)"]
+
+  RS --> B1["bucket.assessments"]
+  RS --> B2["bucket.module_reports"]
+  RS --> B3["bucket.official_policies"]
+  RS --> B4["bucket.official_policy_current"]
+  RS --> B5["bucket.last_seen"]
+
+  APP["app.py routes"] --> RS
+
+  subgraph StorageHelpers["policy_engine/storage.py"]
+    H1["hash_text"]
+    H2["write_secure_text"]
+    H3["read_secure_text"]
+    H4["_crypt_bytes optional XOR with ENCRYPTION_KEY"]
+  end

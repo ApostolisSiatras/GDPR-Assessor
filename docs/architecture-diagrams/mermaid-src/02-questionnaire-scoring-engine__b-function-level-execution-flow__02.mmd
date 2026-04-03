@@ -1,0 +1,18 @@
+flowchart TD
+  B0["AssessmentBuilder(bundle,answers)"] --> B1["build"]
+  B1 --> B2["_section_scores"]
+  B2 --> B2a["_score_answer per scored question"]
+  B1 --> B3["_overall_score(sections)"]
+  B3 --> B3a["_score_band -&gt; Strong/Adequate/Needs Improvement/High Risk"]
+  B1 --> B4["_coverage_gaps"]
+  B1 --> B5["_high_risk_items"]
+  B1 --> B6["_article_summary"]
+  B1 --> B7["_key_facts"]
+  B1 --> B8["return assessment summary dict"]
+
+  C0["CLI mode"] --> C1["parse_args"]
+  C1 --> C2["resolve_schema"]
+  C2 --> C3["SchemaBundle(schema,vocabs)"]
+  C3 --> C4["TerminalWizard.run -&gt; answers"]
+  C4 --> C5["AssessmentBuilder.build"]
+  C5 --> C6["write_outputs answers/assessment/markdown"]

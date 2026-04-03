@@ -1,0 +1,8 @@
+flowchart LR
+  UI[templates/*.html] --> APP[app.py routes]
+  APP --> SCORE[gdpr_wizard.AssessmentBuilder]
+  APP --> COOKIE[cookie_audit.run_cookie_audit]
+  APP --> CTX[policy_engine.build_llm_context]
+  APP --> LLM[generate_module_report / generate_official_policy_sections]
+  APP --> RENDER[markdown_to_html/pdf/docx]
+  APP --> STORE[RuntimeSessionStore + Flask session]

@@ -1,0 +1,14 @@
+flowchart TD
+  L1["before_request cleanup"] --> L2["RuntimeSessionStore.cleanup(now)"]
+  L2 --> L3["remove expired sid buckets by ttl_seconds"]
+
+  L4["route reads/writes runtime data"] --> L5["bucket(session, create=True)"]
+  L5 --> L6{runtime_session_id exists?}
+  L6 -->|No| L7["_ensure_session_id -&gt; uuid4"]
+  L6 -->|Yes| L8["reuse sid"]
+  L7 --> L9["create bucket when missing"]
+  L8 --> L9
+  L9 --> L10["update last_seen"]
+
+  L11["logout/reset/fresh login"] --> L12["drop_bucket(session)"]
+  L12 --> L13["delete _store(sid) and pop runtime_session_id"]

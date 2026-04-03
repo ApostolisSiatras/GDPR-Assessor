@@ -1,0 +1,12 @@
+flowchart LR
+  I1["answers with Q-IDs + profile"] --> N1["_clean_text/_sanitize_value/_split_values"]
+  I2["assessment sections/key_facts/cookies/transfers"] --> N2["fallback merge logic"]
+  I3["site_inspector result"] --> N3["site_inspection block"]
+
+  N1 --> O1["org{name,sector,country,dpo,contact,website}"]
+  N2 --> O2["processing_register/lawful_bases/processors/transfers/retention/security_measures"]
+  N3 --> O3["cookies + banner + reachability"]
+
+  O1 --> C["final context JSON"]
+  O2 --> C
+  O3 --> C

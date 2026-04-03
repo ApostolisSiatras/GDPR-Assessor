@@ -1,0 +1,22 @@
+flowchart LR
+  D1[HTTP response status/headers/cookies/html] --> D2[HTML evidence\nbanner/links/trackers/consent/storage/resource hosts]
+  D1 --> D3[Header+TLS evidence\nsecurity header assessments + certificate]
+  D1 --> D4[Cookie evidence\nflags/domain/samesite/duration/category/third-party]
+
+  D2 --> D5[policy_page_analysis + page_metadata]
+  D3 --> D6[technical block]
+  D4 --> D7[cookie inventory block]
+
+  D5 --> D8[_audit_score]
+  D6 --> D8
+  D7 --> D8
+
+  D5 --> D9[_compliance_gaps]
+  D6 --> D9
+  D7 --> D9
+
+  D8 --> D10[score/summary/findings/recommendations]
+  D9 --> D11[structured remediation gaps]
+
+  D10 --> D12[CookieAuditResult]
+  D11 --> D12

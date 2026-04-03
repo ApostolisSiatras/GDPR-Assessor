@@ -1,0 +1,41 @@
+flowchart TD
+  R0["run_cookie_audit(raw_url)"] --> R1["_normalize_url"]
+  R1 --> R2{url empty?}
+  R2 -->|Yes| R3["return score=0 no-url payload"]
+  R2 -->|No| R4["session_client.get(url)"]
+
+  R4 -->|RequestException| R5["return score=0 unreachable payload"]
+  R4 -->|OK| R6["extract html/final_url/hostname"]
+
+  R6 --> R7["_extract_policy_links"]
+  R6 --> R8["_extract_candidate_policy_links"]
+  R6 --> R9["_consent_ui_signals + banner_context"]
+  R6 --> R10["_extract_resource_hosts"]
+  R6 --> R11["_detect_signals trackers + consent tools"]
+  R6 --> R12["_detect_storage_and_cookie_access"]
+  R7 --> R13["_analyze_policy_page"]
+  R6 --> R14["_html_metadata"]
+
+  R4 --> R15["_security_headers(response.headers)"]
+  R6 --> R16["_tls_report"]
+  R16 --> R17["https fallback if probe fails"]
+
+  R4 --> R18["_set_cookie_headers -&gt; _parse_set_cookie_names"]
+  R4 --> R19["response.cookies loop -&gt; cookie entries + long_lived + http_only_gaps + mismatch"]
+
+  R9 --> R20["_audit_score"]
+  R13 --> R20
+  R15 --> R20
+  R17 --> R20
+  R19 --> R20
+
+  R9 --> R21["_compliance_gaps"]
+  R13 --> R21
+  R15 --> R21
+  R17 --> R21
+  R19 --> R21
+  R14 --> R21
+
+  R20 --> R22["build CookieAuditResult"]
+  R21 --> R22
+  R22 --> R23["return dict"]

@@ -1,0 +1,18 @@
+flowchart LR
+  R1["runtime module report text"] --> E1["download_module_report(fmt)"]
+  R2["runtime official policy artifacts"] --> E2["download_official_policy(fmt)"]
+
+  E1 -->|md| O1["utf-8 bytes"]
+  E1 -->|pdf| O2["markdown_to_pdf_report bytes"]
+  E1 -->|docx| O3["markdown_to_docx_bytes"]
+
+  E2 -->|md/html| O4["text bytes"]
+  E2 -->|pdf| O5["pdf bytes"]
+  E2 -->|docx| O6["markdown_to_docx_bytes"]
+
+  O1 --> S["send_file BytesIO"]
+  O2 --> S
+  O3 --> S
+  O4 --> S
+  O5 --> S
+  O6 --> S

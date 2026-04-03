@@ -1,0 +1,10 @@
+flowchart LR
+  ENV[Environment variables] --> PC[load_platform_config -> PlatformConfig]
+  ENV --> PEC[load_policy_engine_config -> PolicyEngineConfig]
+
+  PC --> APP[app.py runtime settings]
+  PEC --> POL[policy_engine constants]
+
+  VAL[validators.py] --> V1[validate_cookie_policy]
+  VAL --> V2[validate_transfers]
+  VAL --> V3[validate_json Draft7Validator]

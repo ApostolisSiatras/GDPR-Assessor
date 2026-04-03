@@ -1,0 +1,16 @@
+flowchart TD
+  F1["build_llm_context(answers,assessment)"] --> F2["question_context from *_context fields"]
+  F1 --> F3["website_value via _answer_by_hint"]
+  F3 --> F4["inspection = inspect_website"]
+
+  F1 --> F5["profile = assessment.org_profile or answers.company_profile"]
+  F5 --> F6["org_name/sector/country via _clean_text fallbacks"]
+  F5 --> F7["dpo resolution from dpo_name or Q-GAP-001"]
+  F5 --> F8["contact from profile email/phone or Q-GAP-027"]
+
+  F1 --> F9["processors/transfers fallback chain"]
+  F1 --> F10["lawful_bases fallback chain"]
+  F1 --> F11["retention/security/register_controls/transfer_controls"]
+  F1 --> F12["cookies merge with site inspection reasons"]
+
+  F12 --> F13["return canonical context dict"]

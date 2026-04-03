@@ -1,0 +1,42 @@
+flowchart TD
+  S0["score = 100"] --> S1{reachable?}
+  S1 -->|No| S2["score=0 immediate return"]
+  S1 -->|Yes| S3["apply penalties"]
+
+  S3 --> P1["-40 cookies and no banner"]
+  S3 --> P2["-8 banner but no granular choices"]
+  S3 --> P3["-30 cookies and no policy links"]
+  S3 --> P4["-min(12,3*missing_disclosures)"]
+  S3 --> P5["-10 insecure cookies"]
+  S3 --> P6["-10 third-party cookies"]
+  S3 --> P7["-min(20,5*missing_security_headers)"]
+  S3 --> P8["-min(10,3*weak_security_headers)"]
+  S3 --> P9["-10 tls invalid OR -5 cert&lt;30 days"]
+  S3 --> P10["-5 long-lived cookies &gt;395 days"]
+  S3 --> P11["-5 httpOnly gaps for sensitive cookies"]
+  S3 --> P12["-10 trackers and no banner"]
+  S3 --> P13["-6 third-party hosts and no banner"]
+  S3 --> P14["-8 document.cookie write and no banner"]
+  S3 --> P15["-3 Set-Cookie mismatch"]
+
+  P1 --> S4["score = clamp 0..100"]
+  P2 --> S4
+  P3 --> S4
+  P4 --> S4
+  P5 --> S4
+  P6 --> S4
+  P7 --> S4
+  P8 --> S4
+  P9 --> S4
+  P10 --> S4
+  P11 --> S4
+  P12 --> S4
+  P13 --> S4
+  P14 --> S4
+  P15 --> S4
+
+  S4 --> B1{score >= 80}
+  B1 -->|Yes| T1["Strong compliance posture"]
+  B1 -->|No| B2{score >= 50}
+  B2 -->|Yes| T2["Partial compliance"]
+  B2 -->|No| T3["High compliance risk"]

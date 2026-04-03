@@ -1,0 +1,19 @@
+flowchart LR
+  Ctx[Context JSON] --> MR[generate_module_report]
+  Ctx --> OP[generate_official_policy_sections]
+
+  P1[prompts/dpia_report_en.txt\nprompts/gap_report_en.txt] --> MR
+  P2[prompts/official_policy_*.txt] --> OP
+
+  MR --> LLM[run_ollama]
+  OP --> LLM
+
+  LLM --> Q1[has_forbidden_legal_artifacts]
+  Q1 -->|true| Q2[quality_rewrite_instruction + second LLM pass]
+  Q1 -->|false| Q3[skip rewrite]
+  Q2 --> Q4[sanitize_generated_legal_text]
+  Q3 --> Q4
+
+  Q4 --> R1[module report text + metadata]
+  Q4 --> R2[official policy sections]
+  R2 --> R3[_assemble_official_policy]

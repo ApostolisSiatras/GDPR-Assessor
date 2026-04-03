@@ -1,0 +1,24 @@
+flowchart TD
+  G1["generate_official_policy_sections(answers,assessment,overrides)"] --> G2["build_llm_context"]
+  G2 --> G3["ctx_json = json.dumps(context)"]
+  G3 --> G4["loop each OFFICIAL_POLICY_PROMPTS slug"]
+
+  G4 --> G5["_load_prompt_text().replace('{ctx}', ctx_json)"]
+  G5 --> G6{override exists for slug?}
+  G6 -->|Yes| G7["append override guidance"]
+  G6 -->|No| G8["use base prompt"]
+
+  G7 --> G9["run_ollama(prompt_text)"]
+  G8 --> G9
+
+  G9 --> G10{has_forbidden_legal_artifacts?}
+  G10 -->|Yes| G11["run_ollama(repair prompt)"]
+  G10 -->|No| G12["keep content"]
+
+  G11 --> G13["sanitize_generated_legal_text"]
+  G12 --> G13
+  G13 --> G14["sections.append slug/title/content"]
+
+  G14 --> G15["_assemble_official_policy(context,sections)"]
+  G15 --> G16["context_hash = hash_text(ctx_json)"]
+  G16 --> G17["return context, sections, markdown_text, context_hash"]

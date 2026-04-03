@@ -1,0 +1,46 @@
+classDiagram
+  class Question {
+    +id: str
+    +section: str
+    +text: str
+    +qtype: str
+    +required: bool
+    +gdpr_refs: List[str]
+    +enum: List[str]
+    +coverage_policy: Dict
+    +scoring: Dict
+    +max_points: float
+    +from_raw(raw,vocabs) Question
+  }
+
+  class SchemaBundle {
+    +schema_path: Path
+    +vocabs_path: Path
+    +schema: Dict
+    +vocabs: Dict
+    +questions: List[Question]
+  }
+
+  class AssessmentBuilder {
+    +build() Dict
+    -_section_scores() Dict
+    -_overall_score(sections) Dict
+    -_score_answer(q,ans) float
+    -_coverage_gaps() List
+    -_high_risk_items() List
+    -_article_summary() Dict
+    -_key_facts() Dict
+    -_score_band(percent) str
+  }
+
+  class TerminalWizard {
+    +run() Dict
+    -_ask_question(q) Any
+    -_coerce_answer(q,raw) Any
+    -_parse_multiselect(q,raw) List
+  }
+
+  SchemaBundle --> Question : builds
+  AssessmentBuilder --> SchemaBundle : reads
+  AssessmentBuilder --> Question : evaluates
+  TerminalWizard --> SchemaBundle : prompts

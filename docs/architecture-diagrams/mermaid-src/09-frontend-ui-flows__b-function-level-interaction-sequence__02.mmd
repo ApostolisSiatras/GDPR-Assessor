@@ -1,0 +1,30 @@
+sequenceDiagram
+  participant U as User
+  participant T as Template JS/Form
+  participant A as app.py route
+  participant S as Service layer
+  participant ST as Session/Runtime store
+
+  U->>T: Submit assessment form
+  T->>A: POST /assessment/<mode>
+  A->>S: parse_answers + run_assessment
+  S->>ST: save_assessment_files
+  A-->>U: redirect /results
+
+  U->>T: Click Auto-fill
+  T->>A: fetch POST /assessment/<mode>/autofill {variant}
+  A->>S: build_autofill_answers + run_assessment
+  S->>ST: save_assessment_files
+  A-->>T: JSON redirect URL
+  T-->>U: window.location.href = /results
+
+  U->>T: Generate policy
+  T->>A: POST /official-policy
+  A->>S: combined_assessment_inputs + generate_official_policy_sections
+  S->>ST: store policy artifacts
+  A-->>U: redirect /official-policy
+
+  U->>T: Click DOCX/PDF download
+  T->>A: GET download endpoint
+  A->>S: render/export bytes
+  A-->>U: file stream

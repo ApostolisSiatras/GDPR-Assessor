@@ -1,0 +1,11 @@
+flowchart LR
+  I1[HTML form fields and buttons] --> H1[POST body / JSON]
+  H1 --> B1[Flask route handlers]
+
+  B1 --> O1[render_template state/errors/progress]
+  B1 --> O2[render_template results with chart_data + matrices + reports]
+  O2 --> JS1[results.js chartPayload]
+  JS1 --> C1[Chart.js visualizations]
+
+  B1 --> O3[send_file exports zip/md/html/pdf/docx]
+  O3 --> DL[browser download]

@@ -1,0 +1,16 @@
+flowchart LR
+  I[raw_url] --> N[_normalize_url]
+  N --> H[requests.Session.get]
+
+  H --> P1[HTML evidence extraction\n_extract_policy_links\n_extract_candidate_policy_links\n_detect_signals\n_consent_ui_signals\n_extract_resource_hosts\n_detect_storage_and_cookie_access\n_html_metadata]
+
+  H --> P2[Header + cookie evidence\n_set_cookie_headers\n_parse_set_cookie_names\nresponse.cookies loop\n_security_headers\n_tls_report]
+
+  P1 --> A1[_analyze_policy_page]
+  P2 --> S[_audit_score]
+  A1 --> S
+
+  P1 --> G[_compliance_gaps]
+  P2 --> G
+  S --> O[CookieAuditResult.as_dict]
+  G --> O

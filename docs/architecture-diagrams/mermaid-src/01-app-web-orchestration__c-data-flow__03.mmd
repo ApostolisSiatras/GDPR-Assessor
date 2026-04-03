@@ -1,0 +1,18 @@
+flowchart LR
+  U1[User form input] --> P1[request.form / request.json]
+  P1 --> V1[parse_answers + route guards]
+  V1 --> A1[answers dict]
+  A1 --> E1[AssessmentBuilder.build]
+  E1 --> M1[assessment summary]
+  M1 --> RS1[RuntimeSessionStore.assessments]
+  M1 --> SS1[session.assessments metadata]
+
+  RS1 --> R1[results/load_assessment_payload]
+  R1 --> AN1[analytics builders -> chart_data, matrices]
+  AN1 --> T1[results.html + Chart.js]
+
+  R1 --> L1[build_llm_context]
+  L1 --> L2[generate_module_report / generate_official_policy_sections]
+  L2 --> RS2[runtime module_reports/official_policies]
+  RS2 --> D1[download routes]
+  D1 --> U2[Browser file download]

@@ -1,0 +1,12 @@
+flowchart LR
+  MD["markdown text"] --> H["markdown_to_html"]
+  MD --> P1["markdown_to_pdf_bytes(policy_number,signature)"]
+  MD --> P2["markdown_to_pdf_report(title,subtitle)"]
+  MD --> D["markdown_to_docx_bytes(title,subtitle)"]
+
+  D --> C1{python-docx available?}
+  C1 -->|Yes| C2["Document API build"]
+  C1 -->|No and pandoc| C3["convert_markdown_with_pandoc('docx')"]
+  C1 -->|No and no pandoc| C4["RuntimeError"]
+
+  P1 --> SEC["StandardEncryption using policy_number"]

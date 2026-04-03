@@ -1,0 +1,17 @@
+flowchart TD
+  D0["markdown_to_docx_bytes"] --> D1["try import docx.Document"]
+  D1 -->|import error| D2{PANDOC_PATH exists?}
+  D2 -->|Yes| D3["convert_markdown_with_pandoc"]
+  D2 -->|No| D4["raise RuntimeError"]
+
+  D1 -->|ok| D5["create Document + title/subtitle/timestamp"]
+  D5 --> D6["for each markdown line"]
+  D6 --> D7{heading?}
+  D7 --> D8["add_heading(level)"]
+  D6 --> D9{bullet/numbered?}
+  D9 --> D10["add List Bullet/List Number"]
+  D6 --> D11["add paragraph"]
+  D8 --> D12["_markdown_to_docx_text inline cleanup"]
+  D10 --> D12
+  D11 --> D12
+  D12 --> D13["save BytesIO and return bytes"]

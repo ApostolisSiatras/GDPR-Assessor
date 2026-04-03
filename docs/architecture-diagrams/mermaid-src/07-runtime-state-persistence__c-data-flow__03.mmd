@@ -1,0 +1,11 @@
+flowchart LR
+  A1["assessment submit"] --> W1["save_assessment_files"]
+  W1 --> W2["runtime_store.assessments(mode) = answers + assessment + markdown"]
+  W1 --> W3["session.assessments(mode) = metadata"]
+
+  A2["module report generation"] --> W4["runtime_store.module_reports(mode)"]
+  A3["official policy generation"] --> W5["runtime_store.official_policies(run_id)"]
+  W5 --> W6["session.official_policy_run = run_id"]
+
+  R1["results/download routes"] --> R2["read runtime bucket entries"]
+  R2 --> R3["render or export response"]

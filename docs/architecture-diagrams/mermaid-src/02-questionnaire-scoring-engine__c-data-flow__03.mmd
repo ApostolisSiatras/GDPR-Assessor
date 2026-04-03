@@ -1,0 +1,21 @@
+flowchart LR
+  S1[schema JSON] --> S2[SchemaBundle]
+  S3[vocabs.json] --> S2
+  S2 --> Q1[Question.from_raw list]
+
+  A1[answers dict] --> E1[AssessmentBuilder]
+  Q1 --> E1
+
+  E1 --> O1[sections: earned/max/percent]
+  E1 --> O2[overall_score: earned/max/percent/rating]
+  E1 --> O3[coverage_gaps]
+  E1 --> O4[high_risk_indicators]
+  E1 --> O5[gdpr_articles traceability]
+  E1 --> O6[key_facts]
+
+  O1 --> R1[render_markdown]
+  O2 --> R1
+  O3 --> R1
+  O4 --> R1
+  O5 --> R1
+  O6 --> R1

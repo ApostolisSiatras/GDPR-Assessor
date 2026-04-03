@@ -1,0 +1,27 @@
+flowchart TD
+  I1["dpia_assessment + gap_assessment"] --> C1["combined_summary"]
+  C1 --> C1a["average_percent = avg(module percents)"]
+  C1 --> C1b["risk_count = unique high_risk_indicators"]
+  C1 --> C1c["coverage_gaps = len(dpia.gaps)+len(gap.gaps)"]
+
+  I1 --> C2["_collect_field_scores"]
+  C2 --> C3["build_radar_payload"]
+  C3 --> C3a["field score = avg(section.percent by keyword bucket)"]
+
+  I1 --> C4["_article_scores_from_assessment"]
+  C4 --> C5["build_article_chart_payload"]
+  C5 --> C5a["article score = avg(section.percent over referencing questions)"]
+
+  C3 --> C6["build_correlation_matrix"]
+  C6 --> C6a["matrix(a,b) = 1 - abs(score_a-score_b)/100"]
+
+  I1 --> C7["extract_failure_points"]
+  C7 --> C8["build_risk_matrix"]
+  C8 --> C8a["impact via keyword map"]
+  C8 --> C8b["likelihood via keyword map"]
+
+  I1 --> C9["build_risk_scatter_payload"]
+  C9 --> C9a["x = coverage gaps, y = high-risk indicators, r = max(6, percent/5)"]
+
+  I1 --> C10["build_section_risk_payload"]
+  C10 --> C10a["section risk = 100 - section.percent"]

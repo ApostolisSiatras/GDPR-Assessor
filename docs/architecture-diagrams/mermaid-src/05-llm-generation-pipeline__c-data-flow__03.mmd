@@ -1,0 +1,18 @@
+flowchart LR
+  A1["answers + assessment + overrides"] --> C1["build_llm_context"]
+  C1 --> J1["ctx_json"]
+  J1 --> P1["prompt templates with {ctx} replacement"]
+  P1 --> M1["run_ollama output"]
+
+  M1 --> Q1["quality detection + sanitization"]
+  Q1 --> S1["module report text"]
+  Q1 --> S2["official policy section text"]
+
+  S2 --> A2["_assemble_official_policy -&gt; markdown"]
+  A2 --> A3["markdown_to_html"]
+  A2 --> A4["markdown_to_pdf_bytes"]
+
+  S1 --> ST1["runtime_store.module_reports"]
+  A2 --> ST2["runtime_store.official_policies"]
+  ST1 --> D1["module report downloads"]
+  ST2 --> D2["official policy downloads"]
