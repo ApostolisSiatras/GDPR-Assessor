@@ -15,7 +15,6 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
-from reportlab.lib.pdfencrypt import StandardEncryption
 
 from .config import PANDOC_PATH
 
@@ -100,8 +99,8 @@ def markdown_to_html(md_text: str) -> str:
 
 def markdown_to_pdf_bytes(markdown_text: str, policy_number: str, signature: str) -> bytes:
     """
-    EL: Δημιουργεί signed policy PDF με header/watermark και encryption.
-    EN: Builds a signed policy PDF with header/watermark and encryption.
+    EL: Δημιουργεί signed policy PDF με header και watermark.
+    EN: Builds a signed policy PDF with header and watermark.
     """
 
     buffer = BytesIO()
@@ -189,18 +188,11 @@ def markdown_to_pdf_bytes(markdown_text: str, policy_number: str, signature: str
         canvas_obj.restoreState()
         canvas_obj.restoreState()
 
-    class SecureCanvas(canvas.Canvas):
-        def __init__(self, *args, **kwargs):
-            password = kwargs.pop("password", None)
-            if password:
-                kwargs["encrypt"] = StandardEncryption(password, ownerPassword=password)
-            super().__init__(*args, **kwargs)
-
     doc.build(
         elements,
         onFirstPage=_header,
         onLaterPages=_header,
-        canvasmaker=lambda *args, **kwargs: SecureCanvas(*args, password=policy_number, **kwargs),
+        canvasmaker=canvas.Canvas,
     )
     buffer.seek(0)
     return buffer.read()

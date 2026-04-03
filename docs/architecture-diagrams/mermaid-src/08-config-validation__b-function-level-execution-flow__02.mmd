@@ -3,9 +3,7 @@ flowchart TD
   C2 --> C3["PlatformConfig(secret,user,pass,token,ttl)"]
 
   C4["load_policy_engine_config"] --> C5["ensure output directories"]
-  C4 --> C6["_resolve_encryption_key"]
-  C6 --> C7["sha256(secret) bytes or None"]
-  C5 --> C8["PolicyEngineConfig(model,prompts,official_dir,pandoc,regex,key)"]
+  C5 --> C8["PolicyEngineConfig(model,prompts,official_dir,pandoc,regex)"]
 
   V1["validate_transfers(ctx,md_text)"] --> V2["_detect_non_eea_transfers"]
   V2 --> V3{outside EEA and no SCC phrase?}

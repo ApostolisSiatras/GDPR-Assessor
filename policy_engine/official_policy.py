@@ -22,7 +22,7 @@ from llm import run_ollama
 from .config import LAST_UPDATED_PATTERN, MODEL_NAME, OFFICIAL_POLICY_DIR, PANDOC_PATH, PROMPT_DIR
 from .context import build_llm_context
 from .rendering import convert_markdown_with_pandoc, markdown_to_html, markdown_to_pdf_bytes
-from .storage import hash_text, read_secure_text, write_secure_text
+from .storage import hash_text, read_policy_text, write_policy_text
 from .text_quality import has_forbidden_legal_artifacts, quality_rewrite_instruction, sanitize_generated_legal_text
 
 OFFICIAL_POLICY_PROMPTS: "OrderedDict[str, Dict[str, str]]" = OrderedDict(
@@ -140,7 +140,7 @@ def save_official_policy(markdown_text: str, sections: List[Dict[str, str]], con
     run_dir.mkdir(parents=True, exist_ok=False)
 
     policy_path = run_dir / "policy.md"
-    write_secure_text(policy_path, markdown_text)
+    write_policy_text(policy_path, markdown_text)
 
     html_path = run_dir / "policy.html"
     html_body = markdown_to_html(markdown_text)
@@ -194,8 +194,8 @@ def create_official_policy(
 
 def load_official_policy(run_id: str | None) -> Dict[str, Any] | None:
     """
-    EL: Φορτώνει saved policy metadata και αποκρυπτογραφεί markdown όπου απαιτείται.
-    EN: Loads saved policy metadata and decodes markdown when required.
+    EL: Φορτώνει saved policy metadata και το persisted markdown.
+    EN: Loads saved policy metadata and the persisted markdown.
     """
 
     if not run_id:
@@ -211,7 +211,7 @@ def load_official_policy(run_id: str | None) -> Dict[str, Any] | None:
         return None
 
     metadata = json.loads(meta_path.read_text(encoding="utf-8"))
-    metadata["markdown"] = read_secure_text(policy_path)
+    metadata["markdown"] = read_policy_text(policy_path)
     metadata.setdefault("paths", {})
     metadata["paths"]["markdown"] = str(policy_path)
     metadata["paths"]["pdf"] = str(pdf_path) if pdf_path.exists() else metadata["paths"].get("pdf")

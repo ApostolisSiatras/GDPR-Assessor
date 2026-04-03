@@ -11,7 +11,6 @@ come from a typed PolicyEngineConfig for better clarity and testability.
 
 from __future__ import annotations
 
-import hashlib
 import os
 import re
 import shutil
@@ -22,8 +21,8 @@ from pathlib import Path
 @dataclass(frozen=True)
 class PolicyEngineConfig:
     """
-    EL: Immutable configuration object για prompts, output και encryption.
-    EN: Immutable configuration object for prompts, output, and encryption.
+    EL: Immutable configuration object για prompts, output και rendering dependencies.
+    EN: Immutable configuration object for prompts, output, and rendering dependencies.
     """
 
     model_name: str
@@ -31,14 +30,6 @@ class PolicyEngineConfig:
     official_policy_dir: Path
     pandoc_path: str | None
     last_updated_pattern: re.Pattern[str]
-    encryption_key: bytes | None
-
-
-def _resolve_encryption_key() -> bytes | None:
-    secret = os.environ.get("POLICY_ENCRYPTION_KEY")
-    if not secret:
-        return None
-    return hashlib.sha256(secret.encode("utf-8")).digest()
 
 
 def load_policy_engine_config() -> PolicyEngineConfig:
@@ -58,7 +49,6 @@ def load_policy_engine_config() -> PolicyEngineConfig:
         official_policy_dir=official_policy_dir,
         pandoc_path=shutil.which("pandoc"),
         last_updated_pattern=re.compile(r"Last updated:\s*\d{4}-\d{2}-\d{2}", re.IGNORECASE),
-        encryption_key=_resolve_encryption_key(),
     )
 
 
@@ -70,4 +60,3 @@ PROMPT_DIR = _CONFIG.prompt_dir
 OFFICIAL_POLICY_DIR = _CONFIG.official_policy_dir
 PANDOC_PATH = _CONFIG.pandoc_path
 LAST_UPDATED_PATTERN = _CONFIG.last_updated_pattern
-ENCRYPTION_KEY = _CONFIG.encryption_key

@@ -12,8 +12,6 @@ flowchart LR
   C1 -->|Yes| C2[Document API build]
   C1 -->|No and pandoc| C3[convert_markdown_with_pandoc('docx')]
   C1 -->|No and no pandoc| C4[RuntimeError]
-
-  P1 --> SEC[StandardEncryption using policy_number]
 ```
 
 ## B) Function-Level Execution Flow

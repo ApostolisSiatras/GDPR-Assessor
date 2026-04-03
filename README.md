@@ -22,8 +22,6 @@
 ## Security Notes / Σημειώσεις Ασφαλείας
 - EN: Configure `APP_SECRET_KEY`, `PLATFORM_USERNAME`, and `PLATFORM_PASSWORD` in production.
 - EL: Ορίστε `APP_SECRET_KEY`, `PLATFORM_USERNAME`, `PLATFORM_PASSWORD` σε production περιβάλλον.
-- EN: Optional `POLICY_ENCRYPTION_KEY` enables encrypted-at-rest policy markdown storage.
-- EL: Προαιρετικό `POLICY_ENCRYPTION_KEY` ενεργοποιεί encrypted-at-rest αποθήκευση markdown policy.
 
 ## Local Run / Τοπική Εκτέλεση
 ```bash
@@ -45,5 +43,4 @@ pytest
 - `REPORT_ACCESS_TOKEN`
 - `SESSION_RUNTIME_TTL_SECONDS`
 - `POLICY_ENGINE_MODEL`
-- `POLICY_ENCRYPTION_KEY`
 - `OLLAMA_URL`
