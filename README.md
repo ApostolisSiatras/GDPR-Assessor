@@ -46,5 +46,7 @@ pytest
 - `OLLAMA_URL`
 
 ## License / Αδεια
-- EN: This project is proprietary. Any use requires prior written permission from the author.
-- EL: Το project ειναι ιδιοκτησιακο. Για καθε χρηση απαιτειται προηγουμενη γραπτη αδεια απο τον δημιουργο.
+- EN: This project is licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0).
+- EN: License URL: https://creativecommons.org/licenses/by-nc-sa/4.0/
+- EL: Το project διατιθεται με αδεια Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0).
+- EL: Συνδεσμος αδειας: https://creativecommons.org/licenses/by-nc-sa/4.0/
