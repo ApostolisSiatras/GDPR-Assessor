@@ -44,3 +44,7 @@ pytest
 - `SESSION_RUNTIME_TTL_SECONDS`
 - `POLICY_ENGINE_MODEL`
 - `OLLAMA_URL`
+
+## License / Αδεια
+- EN: This project is proprietary. Any use requires prior written permission from the author.
+- EL: Το project ειναι ιδιοκτησιακο. Για καθε χρηση απαιτειται προηγουμενη γραπτη αδεια απο τον δημιουργο.
