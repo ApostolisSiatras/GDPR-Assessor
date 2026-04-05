@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+
+# Proprietary Software Notice
+# This file is part of GDPR Assessor.
+# Copyright (c) 2025 Apostolos Siatras.
+# Unauthorized use, copying, modification, distribution, or derivative works
+# is prohibited without prior written permission from the copyright holder.
+
 """
 EL: Core assessment engine για DPIA/GAP questionnaires και scoring.
 EN: Core assessment engine for DPIA/GAP questionnaires and scoring.

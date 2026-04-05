@@ -1,3 +1,9 @@
+# Proprietary Software Notice
+# This file is part of GDPR Assessor.
+# Copyright (c) 2025 Apostolos Siatras.
+# Unauthorized use, copying, modification, distribution, or derivative works
+# is prohibited without prior written permission from the copyright holder.
+
 from cookie_audit import (
     _consent_ui_signals,
     _extract_candidate_policy_links,

@@ -1,3 +1,9 @@
+# Proprietary Software Notice
+# This file is part of GDPR Assessor.
+# Copyright (c) 2025 Apostolos Siatras.
+# Unauthorized use, copying, modification, distribution, or derivative works
+# is prohibited without prior written permission from the copyright holder.
+
 import pytest
 
 from app import app, combined_assessment_inputs
